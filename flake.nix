@@ -18,9 +18,8 @@ outputs = { self, nixpkgs, ... }@inputs:
       formatter.pkgs = pkgs.nixpkgs-fmt;
 
       devShells.default = pkgs.mkShell {
+        inputsFrom = [ self.packages.${pkgs.system}.default ];
         packages = [
-          pkgs.cargo
-          pkgs.rustc
           pkgs.cargo-bloat
           pkgs.cargo-edit
           pkgs.cargo-outdated
@@ -28,7 +27,6 @@ outputs = { self, nixpkgs, ... }@inputs:
           pkgs.cargo-watch
           pkgs.rust-analyzer
           pkgs.clippy
-          pkgs.rustfmt
         ];
 
         env = {
@@ -38,6 +36,53 @@ outputs = { self, nixpkgs, ... }@inputs:
         shellHook = ''
           echo "shell pour wordle"
         '';
+      };
+
+      packages = {
+        default = pkgs.rustPlatform.buildRustPackage {
+          pname = "wordle-yvaniak";
+          version = "0.1.0";
+
+          nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
+
+          src = ./.;
+
+          cargoHash = "sha256-w0fwlAcHwGGyoL3UEPPux6uglOLabj5orFXP3EAV2zI=";
+
+          meta = with pkgs.stdenv.lib; {
+            description = "A simple wordle tui and gui";
+            homepage = "https://github.com/Yvaniak/wordle-yvaniak";
+            licence = licences.MIT;
+            mainteners = [ mainteners.yvaniak ];
+          };
+        };
+
+        wordle-yvaniak= self.packages.${pkgs.system}.default;
+      };
+
+      checks = {
+        fmt = pkgs.runCommandLocal "fmt" {
+          src = ./.;
+          nativeBuildInputs = self.packages.${pkgs.system}.default.nativeBuildInputs ++ [ pkgs.nixpkgs-fmt ];
+        } ''
+            nixpkgs-fmt .
+            cargo fmt
+          '';
+
+        lint = pkgs.runCommandLocal "lint" {
+          src = ./.;
+          nativeBuildInputs = self.packages.${pkgs.system}.default.nativeBuildInputs ++ [ pkgs.clippy ];
+        } ''
+            cargo clippy
+            cargo fix
+          '';
+
+        check = pkgs.runCommandLocal "check" {
+          src = ./.;
+          nativeBuildInputs = self.packages.${pkgs.system}.default.nativeBuildInputs;
+        } ''
+            cargo t
+          '';
       };
     }
   );
