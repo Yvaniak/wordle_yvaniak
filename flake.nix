@@ -20,13 +20,24 @@ outputs = { self, nixpkgs, ... }@inputs:
       devShells.default = pkgs.mkShell {
         inputsFrom = [ self.packages.${pkgs.system}.default ];
         packages = [
+          #voir la taille des grosses deps
           pkgs.cargo-bloat
+          #gerer les deps depuis le cli
           pkgs.cargo-edit
+          #trouver les outdated
           pkgs.cargo-outdated
+          #trouver les deps non utilisés (à besoin de nightly)
           pkgs.cargo-udeps
+          #auto compile
           pkgs.cargo-watch
+          #lsp
           pkgs.rust-analyzer
+          #lint
           pkgs.clippy
+          #fmt rust
+          pkgs.rustfmt
+          #fmt nix
+          pkgs.nixpkgs-fmt
         ];
 
         env = {
