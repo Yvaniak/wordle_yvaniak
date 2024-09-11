@@ -13,6 +13,19 @@
         pkgs = import nixpkgs {
           inherit system;
         };
+        fmt = pkgs.writeShellApplication {
+          name = "fmt";
+          text = ''
+            nixpkgs-fmt .
+            cargo fmt
+          '';
+        };
+        lint = pkgs.writeShellApplication {
+          name = "lint";
+          text = ''
+            cargo clippy
+          '';
+        };
       in
       {
         formatter.pkgs = pkgs.nixpkgs-fmt;
@@ -38,6 +51,10 @@
             pkgs.rustfmt
             #fmt nix
             pkgs.nixpkgs-fmt
+
+            #scripts utilitaires
+            fmt
+            lint
           ];
 
           env = {
