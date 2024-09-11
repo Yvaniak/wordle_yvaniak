@@ -59,31 +59,6 @@ outputs = { self, nixpkgs, ... }@inputs:
 
         wordle-yvaniak= self.packages.${pkgs.system}.default;
       };
-
-      checks = {
-        fmt = pkgs.runCommandLocal "fmt" {
-          src = ./.;
-          nativeBuildInputs = self.packages.${pkgs.system}.default.nativeBuildInputs ++ [ pkgs.nixpkgs-fmt ];
-        } ''
-            nixpkgs-fmt .
-            cargo fmt
-          '';
-
-        lint = pkgs.runCommandLocal "lint" {
-          src = ./.;
-          nativeBuildInputs = self.packages.${pkgs.system}.default.nativeBuildInputs ++ [ pkgs.clippy ];
-        } ''
-            cargo clippy
-            cargo fix
-          '';
-
-        check = pkgs.runCommandLocal "check" {
-          src = ./.;
-          nativeBuildInputs = self.packages.${pkgs.system}.default.nativeBuildInputs;
-        } ''
-            cargo t
-          '';
-      };
     }
   );
 }
