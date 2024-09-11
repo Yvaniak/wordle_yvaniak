@@ -4,11 +4,6 @@ description = "wordle-yvaniak";
 inputs = {
   nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-  rust-overlay = {
-    url = "github:oxalica/rust-overlay";
-    inputs.nixpkgs.follows = "nixpkgs";
-  };
-
   flake-utils = {
     url = "github:numtide/flake-utils";
     inputs.nixpkgs.follows = "nixpkgs";
@@ -18,9 +13,8 @@ inputs = {
 outputs = { self, nixpkgs, ... }@inputs:
   inputs.flake-utils.lib.eachDefaultSystem (system:
     let
-      # overlays = [ (import inputs.rust-overlay) ];
       pkgs = import nixpkgs {
-        inherit system; #rajouter overlays pour activer rust-overlay
+        inherit system;
       };
     in
     {
@@ -30,7 +24,6 @@ outputs = { self, nixpkgs, ... }@inputs:
         packages = [
           pkgs.cargo
           pkgs.rustc
-          #pour overlay pkgs.rustToolchain
           pkgs.cargo-bloat
           pkgs.cargo-edit
           pkgs.cargo-outdated
@@ -41,7 +34,6 @@ outputs = { self, nixpkgs, ... }@inputs:
 
         env = {
           RUST_BACKTRACE = "1";
-          #pour overlay RUST_SRC_PATH = "${pkgs.rustToolchain}/lib/rustlib/src/rust/library";
         };
 
         shellHook = ''
