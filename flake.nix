@@ -30,6 +30,8 @@ outputs = { self, nixpkgs, ... }@inputs:
           pkgs.cargo-udeps
           pkgs.cargo-watch
           pkgs.rust-analyzer
+          pkgs.clippy
+          pkgs.rustfmt
         ];
 
         env = {
