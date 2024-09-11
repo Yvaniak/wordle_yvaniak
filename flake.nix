@@ -18,18 +18,33 @@
 
         naersk' = pkgs.callPackage inputs.naersk { };
 
-        fmt = pkgs.writeShellApplication {
-          name = "fmt";
-          text = ''
-            nixpkgs-fmt .
-            cargo fmt
-          '';
-        };
-        lint = pkgs.writeShellApplication {
-          name = "lint";
-          text = ''
-            cargo clippy
-          '';
+        mylib = {
+          fmt = pkgs.writeShellApplication {
+            name = "fmt";
+            text = ''
+              nixpkgs-fmt .
+              cargo fmt
+            '';
+          };
+          lint = pkgs.writeShellApplication {
+            name = "lint";
+            text = ''
+              cargo clippy
+              cargo fix
+            '';
+          };
+          update = pkgs.writeShellApplication {
+            name = "update";
+            text = ''
+              cargo update
+            '';
+          };
+          install_deps = pkgs.writeShellApplication {
+            name = "install_deps";
+            text = ''
+              cargo fetch
+            '';
+          };
         };
       in
       {
@@ -58,8 +73,10 @@
             pkgs.nixpkgs-fmt
 
             #scripts utilitaires
-            fmt
-            lint
+            mylib.fmt
+            mylib.lint
+            mylib.update
+            mylib.install_deps
           ];
 
           env = {
