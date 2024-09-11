@@ -5,6 +5,8 @@
     flake-utils = {
       url = "github:numtide/flake-utils";
     };
+
+    naersk.url = "github:nix-community/naersk";
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
@@ -13,6 +15,9 @@
         pkgs = import nixpkgs {
           inherit system;
         };
+
+        naersk' = pkgs.callPackage inputs.naersk { };
+
         fmt = pkgs.writeShellApplication {
           name = "fmt";
           text = ''
@@ -67,18 +72,14 @@
         };
 
         packages = {
-          default = pkgs.rustPlatform.buildRustPackage {
-            pname = "wordle-yvaniak";
-            version = "0.1.0";
-
+          default = naersk'.buildPackage {
             nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
 
             src = ./.;
 
-            cargoHash = "sha256-w0fwlAcHwGGyoL3UEPPux6uglOLabj5orFXP3EAV2zI=";
+            doCheck = true; #pas sûr que ce soit faut par défaut mais on sait jamais
 
             meta = with pkgs.stdenv.lib; {
-              description = "A simple wordle tui and gui";
               homepage = "https://github.com/Yvaniak/wordle-yvaniak";
               licence = licences.MIT;
               mainteners = [ mainteners.yvaniak ];
