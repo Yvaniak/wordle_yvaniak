@@ -1,0 +1,3 @@
+services:
+  wordle-yvaniak:
+    image: wordle-yvaniak:latest
