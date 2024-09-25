@@ -1,6 +1,7 @@
 use rand::Rng;
 use std::io;
 use std::mem;
+use unicode_segmentation::UnicodeSegmentation;
 
 //TODO: make tests
 //TODO: use a database pour gerer le add et l'import/export
@@ -12,7 +13,8 @@ use std::mem;
 fn main() {
     //menu loop
     println!("Welcome in the menu of this wordle game !");
-    loop {
+    let mut boucler: bool = true;
+    while boucler {
         println!("You can start (start, s) or quit (quit, q)");
 
         let mut choix: String = String::new();
@@ -39,8 +41,8 @@ fn main() {
         let choix: &str = choix.trim();
 
         match choix {
-            "s" | "start" => partie(),
-            "q" | "quit" => return,
+            "s" | "start" => boucler = partie(),
+            "q" | "quit" => boucler = false,
             _ => println!("didn't understood that, can you repeat ?"),
         }
     }
@@ -52,45 +54,83 @@ fn pick_the_word() -> String {
     //Teste que le dico n'est pas plus grand que usize
     assert!(mem::size_of::<usize>() > dico.len());
 
-    let mot: usize = rand::thread_rng().gen_range(1..=dico.len() - 1);
+    let mot: usize = rand::thread_rng().gen_range(0..=dico.len() - 1);
 
     assert!(mot < dico.len());
     let mot: &str = dico[mot];
 
     //mise en String pour comparer
-    return mot.to_owned();
+    mot.to_string()
 }
 
-fn partie() {
+fn partie() -> bool {
     let mot: String = pick_the_word();
+
     println!("The word is {mot}"); //testing
 
-    println!("The wordle game begin ! The word has {} letters", mot.len());
-    println!("You can stop by inputting : stop");
+    println!(
+        "The wordle game begin ! The word has {} letters",
+        mot.chars().count()
+    );
+
+    println!("You can go to the menu by inputting : menu and quit by inputting : quit");
     loop {
-        println!("Please input your guess.");
+        println!("\nPlease input your guess.");
         let mut guess: String = String::new();
 
         match io::stdin().read_line(&mut guess) {
-            Err(_) => continue,
-            Ok(_str) if guess.trim() == "stop" => {
-                println!("exiting");
-                return;
-            }
-            Ok(_str) if guess.trim().to_owned() == mot => {
-                println!("You win !");
-                return;
-            }
-            Ok(str) if str - 1 != mot.len() => {
-                println!(
-                    "You gave a word of {} letters but the word is {} letters",
-                    str - 1,
-                    mot.len()
-                );
+            Err(_) => {
+                println!("erreur lors de la lecture du guess");
                 continue;
             }
-            _ => continue,
+            Ok(str) => str,
         };
+
+        let guess = guess.trim();
+        println!("mot:{}:", mot);
+        println!("guess:{}:", guess);
+        if guess == "quit" {
+            println!("quitting");
+            return false;
+        }
+
+        if guess == "menu" {
+            println!("going to menu");
+            return true;
+        }
+
+        let guess = guess.to_string();
+
+        if guess == mot {
+            println!("You win !");
+            return true;
+        }
+
+        let len_guess = guess.graphemes(true).count();
+        let len_mot = mot.graphemes(true).count();
+        if len_guess != len_mot {
+            //FIX: affichage marche pas bien
+            println!(
+                "You gave a word of {} letters but the word is {} letters",
+                len_guess, len_mot
+            );
+            //FIX: la condition marche pas avec les accents
+            continue;
+        }
+
+        let mut mot_copy: String = mot.clone();
+        let mut guess_mut = guess.clone();
+        assert!(len_guess == len_mot);
+        println!("g {guess}");
+        let mut cpt = 1;
+        while mot_copy.len() > 0 {
+            let c_mot = mot_copy.remove(0).to_string();
+            let c_guess = guess_mut.remove(0).to_string();
+            if c_mot != c_guess {
+                println!("The letter {} in position {} is not good", c_guess, cpt);
+            }
+            cpt += 1;
+        }
         //TODO: faire la comparaison comme un vrai wordle
     }
 }

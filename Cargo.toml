@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ratatui = "0.28.1" #pour le tui
-rand = "0.8.5"     #pour le choix random du mot
+ratatui = "0.28.1"              #pour le tui
+rand = "0.8.5"                  #pour le choix random du mot
+unicode-segmentation = "1.12.0" #pour la comparaison entre charactères qui semblent humains avec les accent
