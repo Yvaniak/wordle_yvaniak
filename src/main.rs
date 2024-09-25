@@ -13,7 +13,7 @@ fn main() {
     //menu loop
     println!("Welcome in the menu of this wordle game !");
     loop {
-        println!("You can start (start, s) or quit (quit, q)");
+        println!("\nYou can start (start, s) or quit (quit, q)");
 
         let mut choix: String = String::new();
 
@@ -68,28 +68,34 @@ fn partie() {
     println!("The wordle game begin ! The word has {} letters", mot.len());
     println!("You can stop by inputting : stop");
     loop {
-        println!("Please input your guess.");
+        println!("\nPlease input your guess.");
         let mut guess: String = String::new();
 
         match io::stdin().read_line(&mut guess) {
-            Err(_) => continue,
+            Err(_) => {
+                println!("\nErreur lors de la lecture");
+                continue;
+            },
             Ok(_str) if guess.trim() == "stop" => {
-                println!("exiting");
+                println!("\nexiting");
                 return;
             }
-            Ok(_str) if guess.trim().to_owned() == mot => {
-                println!("You win !");
+            Ok(_str) if *guess.trim() == mot => {
+                println!("\nYou win !");
                 return;
             }
             Ok(str) if str - 1 != mot.len() => {
                 println!(
-                    "You gave a word of {} letters but the word is {} letters",
+                    "\nYou gave a word of {} letters but the word is {} letters",
                     str - 1,
                     mot.len()
                 );
                 continue;
             }
-            _ => continue,
+            _ => {
+                println!("\nThat isn't the word, try again !");
+                continue;
+            },
         };
         //TODO: faire la comparaison comme un vrai wordle
     }
