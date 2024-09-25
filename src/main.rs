@@ -25,7 +25,6 @@ fn main() {
                     || choix.trim() == "q"
                     || choix.trim() == "quit" =>
             {
-                println!("test {}", choix);
                 str
             }
             Ok(_str) => {
