@@ -1,6 +1,5 @@
 use rand::Rng;
 use std::io;
-use std::mem;
 
 //TODO: make tests
 //TODO: use a database pour gerer le add et l'import/export
@@ -49,7 +48,7 @@ fn pick_the_word() -> String {
     let dico: [&str; 6] = ["thé", "café", "faculté", "lycée", "ordinateur", "téléphone"];
 
     //Teste que le dico n'est pas plus grand que usize
-    assert!(mem::size_of::<usize>() > dico.len());
+    assert!(size_of::<usize>() > dico.len());
 
     let mot: usize = rand::thread_rng().gen_range(1..=dico.len() - 1);
 
@@ -57,7 +56,7 @@ fn pick_the_word() -> String {
     let mot: &str = dico[mot];
 
     //mise en String pour comparer
-    return mot.to_owned();
+    mot.to_owned()
 }
 
 fn partie() {
