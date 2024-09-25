@@ -1,6 +1,5 @@
 use rand::Rng;
 use std::io;
-use std::mem;
 use unicode_segmentation::UnicodeSegmentation;
 
 //TODO: make tests
@@ -15,7 +14,7 @@ fn main() {
     println!("Welcome in the menu of this wordle game !");
     let mut boucler: bool = true;
     while boucler {
-        println!("You can start (start, s) or quit (quit, q)");
+        println!("\nYou can start (start, s) or quit (quit, q)");
 
         let mut choix: String = String::new();
 
@@ -27,7 +26,6 @@ fn main() {
                     || choix.trim() == "q"
                     || choix.trim() == "quit" =>
             {
-                println!("test {}", choix);
                 str
             }
             Ok(_str) => {
@@ -52,7 +50,7 @@ fn pick_the_word() -> String {
     let dico: [&str; 6] = ["thé", "café", "faculté", "lycée", "ordinateur", "téléphone"];
 
     //Teste que le dico n'est pas plus grand que usize
-    assert!(mem::size_of::<usize>() > dico.len());
+    assert!(size_of::<usize>() > dico.len());
 
     let mot: usize = rand::thread_rng().gen_range(0..=dico.len() - 1);
 
@@ -80,7 +78,7 @@ fn partie() -> bool {
 
         match io::stdin().read_line(&mut guess) {
             Err(_) => {
-                println!("erreur lors de la lecture du guess");
+                println!("\nerreur lors de la lecture");
                 continue;
             }
             Ok(str) => str,
@@ -90,19 +88,19 @@ fn partie() -> bool {
         println!("mot:{}:", mot);
         println!("guess:{}:", guess);
         if guess == "quit" {
-            println!("quitting");
+            println!("\nquitting");
             return false;
         }
 
         if guess == "menu" {
-            println!("going to menu");
+            println!("\ngoing to menu");
             return true;
         }
 
         let guess = guess.to_string();
 
         if guess == mot {
-            println!("You win !");
+            println!("\nYou win !");
             return true;
         }
 
@@ -111,7 +109,7 @@ fn partie() -> bool {
         if len_guess != len_mot {
             //FIX: affichage marche pas bien
             println!(
-                "You gave a word of {} letters but the word is {} letters",
+                "\nYou gave a word of {} letters but the word is {} letters",
                 len_guess, len_mot
             );
             //FIX: la condition marche pas avec les accents
@@ -127,7 +125,7 @@ fn partie() -> bool {
             let c_mot = mot_copy.remove(0).to_string();
             let c_guess = guess_mut.remove(0).to_string();
             if c_mot != c_guess {
-                println!("The letter {} in position {} is not good", c_guess, cpt);
+                println!("\nThe letter {} in position {} is not good", c_guess, cpt);
             }
             cpt += 1;
         }
