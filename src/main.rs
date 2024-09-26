@@ -124,41 +124,51 @@ fn partie(mot: String) -> bool {
             continue;
         }
 
-        let mut mot_copy: String = mot.clone();
-        let mut pos: u16 = 1;
         assert!(len_guess == len_mot);
-        println!("g {guess}");
-        for c_guess in guess.clone().chars() {
-            let c_mot: char = mot_copy.remove(0);
-            if c_guess != c_mot {
-                if is_misplaced(mot.clone(), guess.clone(), c_guess) {
-                    println!("\nThe letter {} in position {} is misplaced", c_guess, pos);
-                } else {
-                    println!("\nThe letter {} in position {} is not good", c_guess, pos);
-                }
-            }
-            pos += 1;
-        }
-        //TODO: faire la comparaison comme un vrai wordle
+        is_misplaced(mot.clone(), guess.clone());
     }
 }
 
-fn is_misplaced(mut mot_copy_counts: String, mut guess_copy_counts: String, c_guess: char) -> bool {
-    let mut lettre_guess_exists: Option<usize> = Some(1);
-    while Option::is_some(&lettre_guess_exists) {
-        lettre_guess_exists = guess_copy_counts.find(c_guess);
-        let lettre_mot_exists = mot_copy_counts.find(c_guess);
-        if Option::is_some(&lettre_guess_exists) {
-            guess_copy_counts.remove(lettre_guess_exists.unwrap());
-            if Option::is_some(&lettre_mot_exists) {
-                mot_copy_counts.remove(lettre_mot_exists.unwrap());
-                if lettre_mot_exists.unwrap() != lettre_guess_exists.unwrap() {
-                    return true;
+//TODO: rendre testable et tester avec brass
+//SANDS : 22001 ; TURNS : 00201 ; SUPER : 20002 ; CARBS : 02221 ; BARBS : 12201 ; CANAL : 02020
+//et téééphone pour téléphone
+fn is_misplaced(mot: String, guess: String) {
+    let mut pos: u16 = 1;
+    let mut mot_copy: String = mot.clone();
+    for c_guess in guess.clone().chars() {
+        let c_mot: char = mot_copy.remove(0);
+
+        if c_guess != c_mot {
+            let mut misplaced = false;
+            let mut mot_copy_counts = mot.clone();
+            let mut guess_copy_counts = guess.clone();
+            let mut lettre_guess_exists: Option<usize> = Some(1);
+            while Option::is_some(&lettre_guess_exists) {
+                lettre_guess_exists = guess_copy_counts.find(c_guess);
+                let lettre_mot_exists = mot_copy_counts.find(c_guess);
+                if Option::is_some(&lettre_guess_exists) {
+                    guess_copy_counts.remove(lettre_guess_exists.unwrap());
+                    if Option::is_some(&lettre_mot_exists) {
+                        mot_copy_counts.remove(lettre_mot_exists.unwrap());
+                        if lettre_mot_exists.unwrap() != lettre_guess_exists.unwrap() {
+                            misplaced = true;
+                        }
+                    } else {
+                    }
+                } else {
                 }
             }
+            //FIX: si des lettres sont bien placées et qu'il y a une autre lettre en plus comme
+            //"baass" pour "brass" ou "téééphone" pour "téléphone"
+            //il faut que ce soit not good au lieu de misplaced""
+            if misplaced {
+                println!("\nThe letter {} in position {} is misplaced", c_guess, pos);
+            } else {
+                println!("\nThe letter {} in position {} is not good", c_guess, pos);
+            }
         }
+        pos += 1;
     }
-    false
 }
 
 #[cfg(test)]
