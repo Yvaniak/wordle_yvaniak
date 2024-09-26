@@ -139,3 +139,15 @@ fn partie() -> bool {
         //TODO: faire la comparaison comme un vrai wordle
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn picked_word_is_in_dico() {
+        let word: String = pick_the_word();
+        let dico: Vec<String> = get_the_words();
+        assert!(dico.contains(&word));
+    }
+}
