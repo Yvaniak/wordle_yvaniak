@@ -46,19 +46,26 @@ fn main() {
     }
 }
 
-fn pick_the_word() -> String {
-    let dico: [&str; 6] = ["thé", "café", "faculté", "lycée", "ordinateur", "téléphone"];
+fn get_the_words() -> Vec<String> {
+    return vec![
+        "thé".to_string(),
+        "café".to_string(),
+        "faculté".to_string(),
+        "lycée".to_string(),
+        "ordinateur".to_string(),
+        "téléphone".to_string(),
+    ];
+}
 
+fn pick_the_word() -> String {
+    let dico: Vec<String> = get_the_words();
     //Teste que le dico n'est pas plus grand que usize
     assert!(size_of::<usize>() > dico.len());
 
     let mot: usize = rand::thread_rng().gen_range(0..=dico.len() - 1);
 
     assert!(mot < dico.len());
-    let mot: &str = dico[mot];
-
-    //mise en String pour comparer
-    mot.to_string()
+    dico[mot].clone()
 }
 
 fn partie() -> bool {
