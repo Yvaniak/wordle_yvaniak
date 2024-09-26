@@ -24,7 +24,9 @@ fn main() {
                 if choix.trim() == "s"
                     || choix.trim() == "start"
                     || choix.trim() == "q"
-                    || choix.trim() == "quit" =>
+                    || choix.trim() == "quit"
+                    || choix.trim() == "exit"
+                    || choix.trim() == "e" =>
             {
                 str
             }
@@ -40,7 +42,7 @@ fn main() {
 
         match choix {
             "s" | "start" => boucler = partie(),
-            "q" | "quit" => boucler = false,
+            "q" | "quit" | "exit" | "e" => boucler = false,
             _ => println!("didn't understood that, can you repeat ?"),
         }
     }
@@ -94,7 +96,7 @@ fn partie() -> bool {
         let guess = guess.trim();
         println!("mot:{}:", mot);
         println!("guess:{}:", guess);
-        if guess == "quit" {
+        if guess == "quit" && guess == "exit" {
             println!("\nquitting");
             return false;
         }
