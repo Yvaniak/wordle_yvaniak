@@ -125,20 +125,40 @@ fn partie(mot: String) -> bool {
         }
 
         let mut mot_copy: String = mot.clone();
-        let mut guess_mut = guess.clone();
+        let mut pos: u16 = 1;
         assert!(len_guess == len_mot);
         println!("g {guess}");
-        let mut cpt = 1;
-        while mot_copy.len() > 0 {
-            let c_mot = mot_copy.remove(0).to_string();
-            let c_guess = guess_mut.remove(0).to_string();
-            if c_mot != c_guess {
-                println!("\nThe letter {} in position {} is not good", c_guess, cpt);
+        for c_guess in guess.clone().chars() {
+            let c_mot: char = mot_copy.remove(0);
+            if c_guess != c_mot {
+                if is_misplaced(mot.clone(), guess.clone(), c_guess) {
+                    println!("\nThe letter {} in position {} is misplaced", c_guess, pos);
+                } else {
+                    println!("\nThe letter {} in position {} is not good", c_guess, pos);
+                }
             }
-            cpt += 1;
+            pos += 1;
         }
         //TODO: faire la comparaison comme un vrai wordle
     }
+}
+
+fn is_misplaced(mut mot_copy_counts: String, mut guess_copy_counts: String, c_guess: char) -> bool {
+    let mut lettre_guess_exists: Option<usize> = Some(1);
+    while Option::is_some(&lettre_guess_exists) {
+        lettre_guess_exists = guess_copy_counts.find(c_guess);
+        let lettre_mot_exists = mot_copy_counts.find(c_guess);
+        if Option::is_some(&lettre_guess_exists) {
+            guess_copy_counts.remove(lettre_guess_exists.unwrap());
+            if Option::is_some(&lettre_mot_exists) {
+                mot_copy_counts.remove(lettre_mot_exists.unwrap());
+                if lettre_mot_exists.unwrap() != lettre_guess_exists.unwrap() {
+                    return true;
+                }
+            }
+        }
+    }
+    false
 }
 
 #[cfg(test)]
