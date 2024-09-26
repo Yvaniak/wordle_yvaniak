@@ -9,6 +9,7 @@ use unicode_segmentation::UnicodeSegmentation;
 //TODO: ajouter un import/export de mots
 //TODO: ratatui
 //TODO: GUI
+//TODO: Test d'intégration en abstrayant le test de misplacement dans une fonction
 fn main() {
     //menu loop
     println!("Welcome in the menu of this wordle game !");
@@ -41,7 +42,7 @@ fn main() {
         let choix: &str = choix.trim();
 
         match choix {
-            "s" | "start" => boucler = partie(),
+            "s" | "start" => boucler = partie(pick_the_word()),
             "q" | "quit" | "exit" | "e" => boucler = false,
             _ => println!("didn't understood that, can you repeat ?"),
         }
@@ -70,9 +71,7 @@ fn pick_the_word() -> String {
     dico[mot].clone()
 }
 
-fn partie() -> bool {
-    let mot: String = pick_the_word();
-
+fn partie(mot: String) -> bool {
     println!("The word is {mot}"); //testing
 
     println!(
