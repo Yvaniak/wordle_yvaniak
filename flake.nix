@@ -93,13 +93,13 @@
             nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
 
             src = ./.;
+            doUnpack = false;
 
-            doCheck = true; #pas sûr que ce soit faut par défaut mais on sait jamais
+            doCheck = true; #pas sûr que ce soit faux par défaut mais on sait jamais
 
-            meta = with pkgs.stdenv.lib; {
+            meta = {
               homepage = "https://github.com/Yvaniak/wordle-yvaniak";
-              licence = licences.MIT;
-              mainteners = [ mainteners.yvaniak ];
+              licence = pkgs.stdenv.lib.licences.MIT;
             };
           };
 
