@@ -44,7 +44,14 @@ fn main() {
         match choix {
             // "s" | "start" => boucler = partie(pick_the_word()),
             "s" | "start" => boucler = partie("brass".to_string()),
-            "q" | "quit" | "exit" | "e" => boucler = false,
+            "q" | "quit" => {
+                boucler = false;
+                println!("\nquitting");
+            }
+            "exit" | "e" => {
+                boucler = false;
+                println!("\nexitting")
+            }
             _ => println!("didn't understood that, can you repeat ?"),
         }
     }
