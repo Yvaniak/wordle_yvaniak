@@ -96,7 +96,7 @@ fn partie(mot: String) -> bool {
         let guess = guess.trim();
         println!("mot:{}:", mot);
         println!("guess:{}:", guess);
-        if guess == "quit" && guess == "exit" {
+        if guess == "quit" || guess == "exit" {
             println!("\nquitting");
             return false;
         }
