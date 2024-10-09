@@ -1,6 +1,8 @@
-use rand::Rng;
 use std::io;
 use unicode_segmentation::UnicodeSegmentation;
+
+//lib
+use wordle_yvaniak::gen_words::pick_the_word;
 
 //TODO: make tests
 //TODO: use a database pour gerer le add et l'import/export
@@ -48,28 +50,6 @@ fn main() {
             _ => println!("didn't understood that, can you repeat ?"),
         }
     }
-}
-
-fn get_the_words() -> Vec<String> {
-    return vec![
-        "thé".to_string(),
-        "café".to_string(),
-        "faculté".to_string(),
-        "lycée".to_string(),
-        "ordinateur".to_string(),
-        "téléphone".to_string(),
-    ];
-}
-
-fn pick_the_word() -> String {
-    let dico: Vec<String> = get_the_words();
-    //Teste que le dico n'est pas plus grand que usize
-    assert!(size_of::<usize>() > dico.len());
-
-    let mot: usize = rand::thread_rng().gen_range(0..=dico.len() - 1);
-
-    assert!(mot < dico.len());
-    dico[mot].clone()
 }
 
 fn partie(mot: String) -> bool {
@@ -212,17 +192,5 @@ fn is_misplaced(mot: String, guess: String) {
             }
         }
         pos += 1;
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn picked_word_is_in_dico() {
-        let word: String = pick_the_word();
-        let dico: Vec<String> = get_the_words();
-        assert!(dico.contains(&word));
     }
 }
