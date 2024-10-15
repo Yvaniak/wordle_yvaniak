@@ -46,7 +46,14 @@ fn main() {
         match choix {
             // "s" | "start" => boucler = partie(pick_the_word()),
             "s" | "start" => boucler = partie("brass".to_string()),
-            "q" | "quit" | "exit" | "e" => boucler = false,
+            "q" | "quit" => {
+                boucler = false;
+                println!("\nquitting");
+            }
+            "exit" | "e" => {
+                boucler = false;
+                println!("\nexitting")
+            }
             _ => println!("didn't understood that, can you repeat ?"),
         }
     }
@@ -76,8 +83,8 @@ fn partie(mot: String) -> bool {
         let guess = guess.trim();
         println!("mot:{}:", mot);
         println!("guess:{}:", guess);
-        if guess == "quit" && guess == "exit" {
-            println!("\nquitting");
+        if guess == "quit" || guess == "exit" {
+            println!("\n{}ting", guess);
             return false;
         }
 
