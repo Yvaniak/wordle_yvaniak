@@ -1,5 +1,5 @@
 [package]
-name = "wordle-yvaniak"
+name = "wordle_yvaniak"
 version = "0.1.0"
 edition = "2021"
 
