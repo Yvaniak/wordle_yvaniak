@@ -1,14 +1,10 @@
 use rand::Rng;
 
 fn get_the_words() -> Vec<String> {
-    return vec![
-        "thé".to_string(),
-        "café".to_string(),
-        "faculté".to_string(),
-        "lycée".to_string(),
-        "ordinateur".to_string(),
-        "téléphone".to_string(),
-    ];
+    return vec!["thé", "café", "faculté", "lycée", "ordinateur", "téléphone"]
+        .iter()
+        .map(|m| m.to_string())
+        .collect();
 }
 
 pub fn pick_the_word() -> String {
