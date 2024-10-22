@@ -1,7 +1,6 @@
 use std::env;
 use std::process;
-
-use wordle_yvaniak::Config;
+use wordle_yvaniak::config::Config;
 
 fn main() {
     let config: Config = Config::build(env::args()).unwrap_or_else(|err| {

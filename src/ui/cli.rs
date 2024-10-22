@@ -1,4 +1,6 @@
+use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
+use std::io;
 pub struct Cli {}
 
 impl Ui for Cli {
@@ -29,6 +31,7 @@ impl Ui for Cli {
                 }
                 Ok(_str) => {
                     println!("didn't understood that, can you repeat ?");
+                    choix = "".to_string();
                     continue;
                 }
                 Err(_e) => continue,
@@ -36,5 +39,66 @@ impl Ui for Cli {
         }
     }
 
-    fn partie(&self, mot: String) -> () {}
+    fn partie(&self, mot: String) -> ResultPartie {
+        println!(
+            "The wordle game begin ! The word has {} letters",
+            mot.chars().count()
+        );
+
+        //TODO: A assurer que c'est bien reimplémenté
+        println!("You can go to the menu by inputting : menu and quit by inputting : quit");
+
+        loop {
+            println!("\nPlease input your guess.");
+            let mut guess: String = String::new();
+
+            match io::stdin().read_line(&mut guess) {
+                Err(_) => {
+                    println!("\nerreur lors de la lecture");
+                    continue;
+                }
+                Ok(str) => str,
+            };
+
+            let guess = guess.trim();
+
+            if guess == "quit" || guess == "exit" {
+                println!("\n{}ting", guess);
+                return ResultPartie::Quit;
+            }
+
+            if guess == "menu" {
+                println!("\ngoing to menu");
+                return ResultPartie::Stay;
+            }
+
+            let guess = guess.to_string();
+
+            match traitement_wordle(&mot, guess) {
+                Ok(ResultWordle::Win) => {
+                    println!("You win !");
+                    return ResultPartie::Stay;
+                }
+                Ok(ResultWordle::UnmatchedLens(len_mot, len_guess)) => {
+                    println!("You guessed a word of {len_guess} letters but the word to guess contains {len_mot} letters.");
+                }
+                Ok(ResultWordle::Placement(placement)) => {
+                    let mut cpt = 0;
+                    for i in placement.result {
+                        match i {
+                            ResultPlacement::Misplaced(l) => {
+                                println!("\nThe letter {l} in position {cpt} is misplaced");
+                            }
+                            ResultPlacement::Bad(l) => {
+                                println!("\nThe letter {l} in position {cpt} is not good");
+                            }
+                            ResultPlacement::Good(_l) => {}
+                        }
+                        cpt += 1;
+                    }
+                }
+                Err(_e) => continue,
+            }
+        }
+    }
 }
