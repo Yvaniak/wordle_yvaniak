@@ -109,7 +109,7 @@ fn count_of_this_letter_well_placed(
 fn count_of_this_letter_total(l: char, chars_mot: &Chars<'_>, chars_guess: &Chars<'_>) -> u32 {
     let mut cpt: u32 = 0;
     for (i_mot, l_mot) in chars_mot.clone().enumerate() {
-        if (l == l_mot) || (chars_guess.clone().nth(i_mot).unwrap() == l) {
+        if l == l_mot || chars_guess.clone().nth(i_mot).unwrap() == l {
             cpt += 1;
         }
     }
