@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::str::Chars;
 use unicode_segmentation::UnicodeSegmentation;
 pub mod cli;
 
@@ -63,46 +64,24 @@ impl Placement {
     fn build(ref_mot: &String, guess: String) -> Result<ResultWordle, Box<dyn Error>> {
         let mut result: Vec<ResultPlacement> = Vec::new();
         let chars_mot = (*ref_mot).chars();
+        let chars_guess = guess.chars();
 
-        for (i_l, l) in guess.chars().enumerate() {
+        for (i_l, l) in chars_guess.clone().enumerate() {
             if !(*ref_mot).contains(l) {
                 result.push(ResultPlacement::Bad(l));
             } else {
                 if chars_mot.clone().nth(i_l).unwrap() == l {
                     result.push(ResultPlacement::Good(l));
                 } else {
-                    let match_mot: Vec<(usize, &str)> = (*ref_mot).match_indices(l).collect();
-                    let match_guess: Vec<(usize, &str)> = guess.match_indices(l).collect();
+                    let letters_well_placed: u32 =
+                        count_of_this_letter_well_placed(l, &chars_mot, &chars_guess);
 
-                    let mut match_mot_i = Vec::new();
-                    let mut match_guess_i = Vec::new();
+                    let letters_not_well_placed: u32 =
+                        count_of_this_letter_total(l, &chars_mot, &chars_guess);
 
-                    for (i, _e) in match_mot {
-                        match_mot_i.push(i);
-                    }
-                    for (i, _e) in match_guess {
-                        match_guess_i.push(i);
-                    }
-                    for i in &match_mot_i {
-                        println!("he1 : {}", i);
-                    }
-                    for i in &match_guess_i {
-                        println!("he2 : {}", i);
-                    }
-
-                    match_mot_i.retain(|i| match_guess_i.contains(i));
-                    match_guess_i.retain(|i| match_mot_i.contains(i));
-                    for i in &match_mot_i {
-                        println!("hey1 : {}", i);
-                    }
-                    for i in &match_guess_i {
-                        println!("hey2 : {}", i);
-                    }
-                    if match_guess_i.len() == match_mot_i.len() {
-                        println!("cas 1");
-                        result.push(ResultPlacement::Bad(l))
+                    if letters_not_well_placed - letters_well_placed < 2 {
+                        result.push(ResultPlacement::Bad(l));
                     } else {
-                        println!("cas 2");
                         result.push(ResultPlacement::Misplaced(l));
                     }
                 }
@@ -111,6 +90,30 @@ impl Placement {
 
         Ok(ResultWordle::Placement(Placement { result }))
     }
+}
+
+fn count_of_this_letter_well_placed(
+    l: char,
+    chars_mot: &Chars<'_>,
+    chars_guess: &Chars<'_>,
+) -> u32 {
+    let mut cpt: u32 = 0;
+    for (i_mot, l_mot) in chars_mot.clone().enumerate() {
+        if l == l_mot && chars_guess.clone().nth(i_mot).unwrap() == l {
+            cpt += 1;
+        }
+    }
+    return cpt;
+}
+
+fn count_of_this_letter_total(l: char, chars_mot: &Chars<'_>, chars_guess: &Chars<'_>) -> u32 {
+    let mut cpt: u32 = 0;
+    for (i_mot, l_mot) in chars_mot.clone().enumerate() {
+        if (l == l_mot) || (chars_guess.clone().nth(i_mot).unwrap() == l) {
+            cpt += 1;
+        }
+    }
+    return cpt;
 }
 
 #[cfg(test)]
