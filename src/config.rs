@@ -39,28 +39,28 @@ mod tests {
 
     #[test]
     fn build_config_tui() {
-        let args = ["", "tui"].iter().map(|s| s.to_string());
+        let args = ["", "tui"].iter().map(|s| String::from(*s));
         let config = Config::build(args);
         assert_eq!(config.unwrap(), Config { ui: ConfigUi::Tui });
     }
 
     #[test]
     fn build_config_gui() {
-        let args = ["", "gui"].iter().map(|s| s.to_string());
+        let args = ["", "gui"].iter().map(|s| String::from(*s));
         let config = Config::build(args);
         assert_eq!(config.unwrap(), Config { ui: ConfigUi::Gui });
     }
 
     #[test]
     fn build_config_vide() {
-        let args = [""].iter().map(|s| s.to_string());
+        let args = [""].iter().map(|s| String::from(*s));
         let config = Config::build(args);
         assert_eq!(config.unwrap(), Config { ui: ConfigUi::Cli });
     }
 
     #[test]
     fn build_config_unknown() {
-        let args = ["", "unknown"].iter().map(|s| s.to_string());
+        let args = ["", "unknown"].iter().map(|s| String::from(*s));
         let config = Config::build(args);
         assert!(config.is_err_and(|e| {
             e == "doesn't know this interface, the choices are gui, tui and cli"

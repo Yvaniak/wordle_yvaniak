@@ -13,7 +13,7 @@ impl Ui for Cli {
     }
 
     fn menu(&self) -> ChoixMenu {
-        let mut choix: String = "".to_string();
+        let mut choix: String = String::new();
 
         loop {
             match std::io::stdin().read_line(&mut choix) {
@@ -31,7 +31,7 @@ impl Ui for Cli {
                 }
                 Ok(_str) => {
                     println!("didn't understood that, can you repeat ?");
-                    choix = "".to_string();
+                    choix = String::new();
                     continue;
                 }
                 Err(_e) => continue,
@@ -54,7 +54,7 @@ impl Ui for Cli {
 
             //allow the test of partie
             match &guess_test {
-                Some(value_test) => guess = value_test.to_string(),
+                Some(value_test) => guess = String::from(value_test),
                 None => {
                     match io::stdin().read_line(&mut guess) {
                         Err(_) => {
@@ -78,7 +78,7 @@ impl Ui for Cli {
                 return ResultPartie::Stay;
             }
 
-            let guess = guess.to_string();
+            let guess = String::from(guess);
 
             match traitement_wordle(&mot, guess) {
                 Ok(ResultWordle::Win) => {
@@ -116,28 +116,28 @@ mod tests {
     #[test]
     fn partie_cli_quit() {
         let cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie("".to_string(), Some("quit".to_string()));
+        let res: ResultPartie = cli.partie(String::new(), Some(String::from("quit")));
         assert_eq!(ResultPartie::Quit, res);
     }
 
     #[test]
     fn partie_cli_exit() {
         let cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie("".to_string(), Some("exit".to_string()));
+        let res: ResultPartie = cli.partie(String::new(), Some(String::from("exit")));
         assert_eq!(ResultPartie::Quit, res);
     }
 
     #[test]
     fn partie_cli_menu() {
         let cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie("".to_string(), Some("menu".to_string()));
+        let res: ResultPartie = cli.partie(String::new(), Some(String::from("menu")));
         assert_eq!(ResultPartie::Stay, res);
     }
 
     #[test]
     fn partie_cli_win() {
         let cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie("".to_string(), Some("menu".to_string()));
+        let res: ResultPartie = cli.partie(String::new(), Some(String::from("menu")));
         assert_eq!(ResultPartie::Stay, res);
     }
 }

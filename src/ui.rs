@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn placement_brass_sands() {
-        let res = Placement::build(&"brass".to_string(), "sands".to_string());
+        let res = Placement::build(&String::from("brass"), String::from("sands"));
         match res.unwrap() {
             ResultWordle::Placement(p) => {
                 assert_eq!(
@@ -172,7 +172,7 @@ mod tests {
 
     #[test]
     fn placement_brass_turns() {
-        let res = Placement::build(&"brass".to_string(), "turns".to_string());
+        let res = Placement::build(&String::from("brass"), String::from("turns"));
         match res.unwrap() {
             ResultWordle::Placement(p) => {
                 assert_eq!(
@@ -192,7 +192,7 @@ mod tests {
 
     #[test]
     fn placement_brass_super() {
-        let res = Placement::build(&"brass".to_string(), "super".to_string());
+        let res = Placement::build(&String::from("brass"), String::from("super"));
         match res.unwrap() {
             ResultWordle::Placement(p) => {
                 assert_eq!(
@@ -212,7 +212,7 @@ mod tests {
 
     #[test]
     fn placement_brass_carbs() {
-        let res = Placement::build(&"brass".to_string(), "carbs".to_string());
+        let res = Placement::build(&String::from("brass"), String::from("carbs"));
         match res.unwrap() {
             ResultWordle::Placement(p) => {
                 assert_eq!(
@@ -232,7 +232,7 @@ mod tests {
 
     #[test]
     fn placement_brass_barbs() {
-        let res = Placement::build(&"brass".to_string(), "barbs".to_string());
+        let res = Placement::build(&String::from("brass"), String::from("barbs"));
         match res.unwrap() {
             ResultWordle::Placement(p) => {
                 assert_eq!(
@@ -252,7 +252,7 @@ mod tests {
 
     #[test]
     fn placement_brass_canal() {
-        let res = Placement::build(&"brass".to_string(), "canal".to_string());
+        let res = Placement::build(&String::from("brass"), String::from("canal"));
         match res.unwrap() {
             ResultWordle::Placement(p) => {
                 assert_eq!(
@@ -272,7 +272,7 @@ mod tests {
 
     #[test]
     fn placement_telephone_teephone() {
-        let res = Placement::build(&"téléphone".to_string(), "téééphone".to_string());
+        let res = Placement::build(&String::from("téléphone"), String::from("téééphone"));
         match res.unwrap() {
             ResultWordle::Placement(p) => {
                 assert_eq!(
