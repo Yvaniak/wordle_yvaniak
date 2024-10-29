@@ -77,8 +77,6 @@ pub fn traitement_wordle(ref_mot: &String, guess: String) -> Result<ResultWordle
     let len_guess = guess.graphemes(true).count();
     let len_mot = (*ref_mot).graphemes(true).count();
     if len_guess != len_mot {
-        //FIX: affichage marche pas bien
-        //FIX: la condition marche pas avec les accents
         return Ok(ResultWordle::UnmatchedLens(len_mot, len_guess));
     }
 
