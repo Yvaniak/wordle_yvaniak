@@ -1,11 +1,42 @@
+use cli::Cli;
 use std::error::Error;
 use std::str::Chars;
+use tui::Tui;
 use unicode_segmentation::UnicodeSegmentation;
 pub mod cli;
+pub mod tui;
 
 pub enum ChoixMenu {
     Start,
     Quit,
+}
+
+pub enum UiEnum {
+    ItemCli(Cli),
+    ItemTui(Tui),
+}
+
+impl UiEnum {
+    pub fn welcoming(&self) -> () {
+        match self {
+            UiEnum::ItemTui(tui) => tui.welcoming(),
+            UiEnum::ItemCli(cli) => cli.welcoming(),
+        }
+    }
+
+    pub fn menu(&self) -> ChoixMenu {
+        match self {
+            UiEnum::ItemTui(tui) => tui.menu(),
+            UiEnum::ItemCli(cli) => cli.menu(),
+        }
+    }
+
+    pub fn partie(&self, mot: String, guess_test: Option<String>) -> ResultPartie {
+        match self {
+            UiEnum::ItemTui(tui) => tui.partie(mot, guess_test),
+            UiEnum::ItemCli(cli) => cli.partie(mot, guess_test),
+        }
+    }
 }
 
 pub trait Ui {

@@ -7,7 +7,7 @@ fn main() {
         eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });
-    if let Err(e) = wordle_yvaniak::run(config) {
+    if let Err(e) = wordle_yvaniak::launch(config) {
         eprintln!("Application error: {e}");
         process::exit(1);
     }

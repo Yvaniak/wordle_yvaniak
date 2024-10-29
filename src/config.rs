@@ -1,8 +1,13 @@
-use crate::TypeUi;
+#[derive(Debug, PartialEq)]
+pub enum ConfigUi {
+    Cli,
+    Tui,
+    Gui,
+}
 
 #[derive(Debug, PartialEq)]
 pub struct Config {
-    pub ui: TypeUi,
+    pub ui: ConfigUi,
 }
 
 impl Config {
@@ -10,11 +15,11 @@ impl Config {
         args.next();
 
         let lanceur = match args.next() {
-            Some(arg) if arg == "cli" => TypeUi::Cli,
-            Some(arg) if arg == "tui" => TypeUi::Tui,
-            Some(arg) if arg == "gui" => TypeUi::Gui,
+            Some(arg) if arg == "cli" => ConfigUi::Cli,
+            Some(arg) if arg == "tui" => ConfigUi::Tui,
+            Some(arg) if arg == "gui" => ConfigUi::Gui,
             Some(_) => return Err("doesn't know this interface, the choices are gui, tui and cli"),
-            None => TypeUi::Cli,
+            None => ConfigUi::Cli,
         };
 
         Ok(Config { ui: lanceur })
@@ -29,28 +34,28 @@ mod tests {
     fn build_config_cli() {
         let args = ["", "cli"].iter().map(ToString::to_string);
         let config = Config::build(args);
-        assert_eq!(config.unwrap(), Config { ui: TypeUi::Cli });
+        assert_eq!(config.unwrap(), Config { ui: ConfigUi::Cli });
     }
 
     #[test]
     fn build_config_tui() {
         let args = ["", "tui"].iter().map(|s| s.to_string());
         let config = Config::build(args);
-        assert_eq!(config.unwrap(), Config { ui: TypeUi::Tui });
+        assert_eq!(config.unwrap(), Config { ui: ConfigUi::Tui });
     }
 
     #[test]
     fn build_config_gui() {
         let args = ["", "gui"].iter().map(|s| s.to_string());
         let config = Config::build(args);
-        assert_eq!(config.unwrap(), Config { ui: TypeUi::Gui });
+        assert_eq!(config.unwrap(), Config { ui: ConfigUi::Gui });
     }
 
     #[test]
     fn build_config_vide() {
         let args = [""].iter().map(|s| s.to_string());
         let config = Config::build(args);
-        assert_eq!(config.unwrap(), Config { ui: TypeUi::Cli });
+        assert_eq!(config.unwrap(), Config { ui: ConfigUi::Cli });
     }
 
     #[test]
