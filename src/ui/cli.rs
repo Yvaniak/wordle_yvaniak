@@ -39,7 +39,7 @@ impl Ui for Cli {
         }
     }
 
-    fn partie(&self, mot: String) -> ResultPartie {
+    fn partie(&self, mot: String, guess_test: Option<String>) -> ResultPartie {
         println!(
             "The wordle game begin ! The word has {} letters",
             mot.chars().count()
@@ -52,13 +52,19 @@ impl Ui for Cli {
             println!("\nPlease input your guess.");
             let mut guess: String = String::new();
 
-            match io::stdin().read_line(&mut guess) {
-                Err(_) => {
-                    println!("\nerreur lors de la lecture");
-                    continue;
+            //allow the test of partie
+            match &guess_test {
+                Some(value_test) => guess = value_test.to_string(),
+                None => {
+                    match io::stdin().read_line(&mut guess) {
+                        Err(_) => {
+                            println!("\nerreur lors de la lecture");
+                            continue;
+                        }
+                        Ok(str) => str,
+                    };
                 }
-                Ok(str) => str,
-            };
+            }
 
             let guess = guess.trim();
 
@@ -100,5 +106,38 @@ impl Ui for Cli {
                 Err(_e) => continue,
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn partie_cli_quit() {
+        let cli: Cli = Cli {};
+        let res: ResultPartie = cli.partie("".to_string(), Some("quit".to_string()));
+        assert_eq!(ResultPartie::Quit, res);
+    }
+
+    #[test]
+    fn partie_cli_exit() {
+        let cli: Cli = Cli {};
+        let res: ResultPartie = cli.partie("".to_string(), Some("exit".to_string()));
+        assert_eq!(ResultPartie::Quit, res);
+    }
+
+    #[test]
+    fn partie_cli_menu() {
+        let cli: Cli = Cli {};
+        let res: ResultPartie = cli.partie("".to_string(), Some("menu".to_string()));
+        assert_eq!(ResultPartie::Stay, res);
+    }
+
+    #[test]
+    fn partie_cli_win() {
+        let cli: Cli = Cli {};
+        let res: ResultPartie = cli.partie("".to_string(), Some("menu".to_string()));
+        assert_eq!(ResultPartie::Stay, res);
     }
 }

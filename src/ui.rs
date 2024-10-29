@@ -46,7 +46,7 @@ pub trait Ui {
 
     fn menu(&self) -> ChoixMenu;
 
-    fn partie(&self, mot: String) -> ResultPartie;
+    fn partie(&self, mot: String, guess_test: Option<String>) -> ResultPartie;
 }
 
 #[derive(Debug, PartialEq)]
@@ -63,6 +63,7 @@ pub enum ResultWordle {
     Placement(Placement),
 }
 
+#[derive(Debug, PartialEq)]
 pub enum ResultPartie {
     Quit,
     Stay,
