@@ -17,16 +17,22 @@ pub struct App {
 }
 
 impl App {
-    pub fn run(&self) -> Result<(), Box<dyn Error>> {
+    pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
         self.instance.welcoming();
         loop {
             let partie_result = match self.instance.menu() {
-                ChoixMenu::Quit => return Ok(()),
+                ChoixMenu::Quit => {
+                    self.instance.quit();
+                    return Ok(());
+                }
                 ChoixMenu::Start => self.instance.partie(gen_words::pick_the_word(), None),
             };
 
             match partie_result {
-                ResultPartie::Quit => return Ok(()),
+                ResultPartie::Quit => {
+                    self.instance.quit();
+                    return Ok(());
+                }
                 ResultPartie::Stay => self.instance.welcoming(),
             }
         }
@@ -36,7 +42,7 @@ impl App {
             ConfigUi::Cli => {
                 return Ok(App {
                     instance: UiEnum::ItemCli(Cli::new()),
-                })
+                });
             }
             ConfigUi::Tui => {
                 return Ok(App {
@@ -49,7 +55,7 @@ impl App {
 }
 
 pub fn launch(config: config::Config) -> Result<(), Box<dyn Error>> {
-    let app = match App::build(config) {
+    let mut app = match App::build(config) {
         Err(e) => return Err(e),
         Ok(app) => app,
     };

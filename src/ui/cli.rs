@@ -8,11 +8,13 @@ impl Ui for Cli {
         Self {}
     }
 
+    fn quit(&mut self) -> () {}
+
     fn welcoming(&self) -> () {
         println!("Welcome in the menu of this worlde game !");
     }
 
-    fn menu(&self) -> ChoixMenu {
+    fn menu(&mut self) -> ChoixMenu {
         let mut choix: String = String::new();
 
         loop {
@@ -39,13 +41,12 @@ impl Ui for Cli {
         }
     }
 
-    fn partie(&self, mot: String, guess_test: Option<String>) -> ResultPartie {
+    fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie {
         println!(
             "The wordle game begin ! The word has {} letters",
             mot.chars().count()
         );
 
-        //TODO: A assurer que c'est bien reimplémenté
         println!("You can go to the menu by inputting : menu and quit by inputting : quit");
 
         loop {

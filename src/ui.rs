@@ -24,17 +24,24 @@ impl UiEnum {
         }
     }
 
-    pub fn menu(&self) -> ChoixMenu {
+    pub fn menu(&mut self) -> ChoixMenu {
         match self {
             UiEnum::ItemTui(tui) => tui.menu(),
             UiEnum::ItemCli(cli) => cli.menu(),
         }
     }
 
-    pub fn partie(&self, mot: String, guess_test: Option<String>) -> ResultPartie {
+    pub fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie {
         match self {
             UiEnum::ItemTui(tui) => tui.partie(mot, guess_test),
             UiEnum::ItemCli(cli) => cli.partie(mot, guess_test),
+        }
+    }
+
+    pub fn quit(&mut self) -> () {
+        match self {
+            UiEnum::ItemCli(cli) => cli.quit(),
+            UiEnum::ItemTui(tui) => tui.quit(),
         }
     }
 }
@@ -44,9 +51,11 @@ pub trait Ui {
 
     fn welcoming(&self) -> ();
 
-    fn menu(&self) -> ChoixMenu;
+    fn menu(&mut self) -> ChoixMenu;
 
-    fn partie(&self, mot: String, guess_test: Option<String>) -> ResultPartie;
+    fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie;
+
+    fn quit(&mut self) -> ();
 }
 
 #[derive(Debug, PartialEq)]
