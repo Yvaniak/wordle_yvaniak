@@ -116,28 +116,28 @@ mod tests {
 
     #[test]
     fn partie_cli_quit() {
-        let cli: Cli = Cli {};
+        let mut cli: Cli = Cli {};
         let res: ResultPartie = cli.partie(String::new(), Some(String::from("quit")));
         assert_eq!(ResultPartie::Quit, res);
     }
 
     #[test]
     fn partie_cli_exit() {
-        let cli: Cli = Cli {};
+        let mut cli: Cli = Cli {};
         let res: ResultPartie = cli.partie(String::new(), Some(String::from("exit")));
         assert_eq!(ResultPartie::Quit, res);
     }
 
     #[test]
     fn partie_cli_menu() {
-        let cli: Cli = Cli {};
+        let mut cli: Cli = Cli {};
         let res: ResultPartie = cli.partie(String::new(), Some(String::from("menu")));
         assert_eq!(ResultPartie::Stay, res);
     }
 
     #[test]
     fn partie_cli_win() {
-        let cli: Cli = Cli {};
+        let mut cli: Cli = Cli {};
         let res: ResultPartie = cli.partie(String::new(), Some(String::from("menu")));
         assert_eq!(ResultPartie::Stay, res);
     }
