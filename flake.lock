@@ -39,8 +39,8 @@
     "nixpkgs": {
       "locked": {
         "lastModified": 0,
-        "narHash": "sha256-RP+OQ6koQQLX5nw0NmcDrzvGL8HDLnyXt/jHhL1jwjM=",
-        "path": "/nix/store/wb6agba4kfsxpbnb5hzlq58vkjzvbsk6-source",
+        "narHash": "sha256-Zwl8YgTVJTEum+L+0zVAWvXAGbWAuXHax3KzuejaDyo=",
+        "path": "/nix/store/sh0v21n9zc03b94qjj4jkkg5mbsjkpzr-source",
         "type": "path"
       },
       "original": {
@@ -51,8 +51,8 @@
     "nixpkgs_2": {
       "locked": {
         "lastModified": 0,
-        "narHash": "sha256-RP+OQ6koQQLX5nw0NmcDrzvGL8HDLnyXt/jHhL1jwjM=",
-        "path": "/nix/store/wb6agba4kfsxpbnb5hzlq58vkjzvbsk6-source",
+        "narHash": "sha256-Zwl8YgTVJTEum+L+0zVAWvXAGbWAuXHax3KzuejaDyo=",
+        "path": "/nix/store/sh0v21n9zc03b94qjj4jkkg5mbsjkpzr-source",
         "type": "path"
       },
       "original": {
