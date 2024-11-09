@@ -1,12 +1,13 @@
-use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
+use super::{traitement_wordle, Placement, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
 
+use ratatui::crossterm::style::StyledContent;
 use ratatui::crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use ratatui::text::{Text, ToText};
+use ratatui::text::{Line, Span, Text, ToLine, ToText};
 use ratatui::{
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Flex, Layout, Position, Rect},
@@ -19,11 +20,47 @@ use std::rc::Rc;
 
 use tui_big_text::{BigText, PixelSize};
 
-use std::io::{self, Stderr};
+use std::io::{self, Lines, Stderr};
 pub struct Tui {
     terminal: Terminal<CrosstermBackend<Stderr>>,
     start_area: Rect,
     quit_area: Rect,
+}
+
+struct GuessObject<'a> {
+    mot: String,
+    guess: String,
+    etat: ResultWordle,
+    affichage: Line<'a>,
+}
+
+impl GuessObject<'_> {
+    fn new(mot: &String) -> Self {
+        let guess = " ".repeat(mot.chars().count());
+        GuessObject {
+            etat: traitement_wordle(&mot, guess.clone()).unwrap(),
+            guess,
+            mot: mot.clone(),
+            affichage: Line::from("a"),
+        }
+    }
+
+    fn set_guess(&mut self, guess: String) -> () {
+        self.guess = guess;
+        self.etat = traitement_wordle(&self.mot, self.guess.clone()).unwrap();
+        self.affichage = match &self.etat {
+            ResultWordle::Placement(placement) => placement
+                .result
+                .iter()
+                .map(|l| match l {
+                    ResultPlacement::Bad(b) => String::from(*b).on_red(),
+                    ResultPlacement::Good(g) => String::from(*g).on_green(),
+                    ResultPlacement::Misplaced(m) => String::from(*m).on_yellow(),
+                })
+                .collect::<Line>(),
+            _ => Line::from("a"),
+        };
+    }
 }
 
 impl Ui for Tui {
@@ -69,17 +106,26 @@ impl Ui for Tui {
 
     //TODO:
     fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie {
-        let mut guess: String = String::new();
+        // let mut guess: String = String::new();
+        //TODO: mettre guess et etat guess dans un struct guess_object avec un builder pour ça et une
+        //impl pour set l'état après
+        let mut guess_object = GuessObject::new(&mot);
+        guess_object.set_guess(guess_object.guess.clone());
         loop {
             let _ = self.terminal.draw(|f| {
                 let layout_game = my_layout(Direction::Vertical, f.area(), 80, 20);
                 let layout_buttons = my_layout(Direction::Horizontal, layout_game[1], 50, 50);
-                let game_area = my_flex(3, layout_game[0]);
+                let game_area = my_flex(10, layout_game[0]);
                 let menu_area = my_flex(5, layout_buttons[0]);
                 let quit_area = my_flex(5, layout_buttons[1]);
 
-                let block = Block::bordered().style(Style::new().fg(ratatui::style::Color::Red));
-                let game = Paragraph::new("T E S T").block(block).centered().bold();
+                let block = Block::bordered();
+                // "T", " ", "E", " ", "S", " ", "T"
+                // let game_text =
+                //     Text::from(Line::from(vec!["T".on_grey(), " ".into(), "E".on_green()]))
+                // .style(Style::default().fg(ratatui::style::Color::Black));
+                let game_text = Text::from(guess_object.affichage.clone());
+                let game = Paragraph::new(game_text).block(block).centered().bold();
                 let button_menu =
                     my_paragraph(ratatui::style::Color::Blue, "\nMenu (Shift + m)".to_text());
                 let button_quit =
@@ -213,6 +259,6 @@ fn my_flex(len: u16, area: Rect) -> Rect {
 }
 
 fn my_paragraph<'a>(color: ratatui::style::Color, content: Text<'a>) -> Paragraph<'a> {
-    let block = Block::bordered().style(Style::new().fg(color));
+    let block = Block::bordered().style(Style::new().bg(color).fg(ratatui::style::Color::Black));
     Paragraph::new(content).block(block).centered().bold()
 }
