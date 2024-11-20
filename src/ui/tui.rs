@@ -11,7 +11,7 @@ use ratatui::text::{Line, Span, Text, ToLine, ToText};
 use ratatui::{
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Flex, Layout, Position, Rect},
-    style::{Style, Stylize},
+    style::{Color, Style, Stylize},
     widgets::{Block, Paragraph},
     Terminal,
 };
@@ -41,7 +41,7 @@ impl GuessObject<'_> {
             etat: traitement_wordle(&mot, guess.clone()).unwrap(),
             guess,
             mot: mot.clone(),
-            affichage: Line::from("a"),
+            affichage: Line::from(""),
         }
     }
 
@@ -53,13 +53,40 @@ impl GuessObject<'_> {
                 .result
                 .iter()
                 .map(|l| match l {
-                    ResultPlacement::Bad(b) => String::from(*b).on_red(),
-                    ResultPlacement::Good(g) => String::from(*g).on_green(),
-                    ResultPlacement::Misplaced(m) => String::from(*m).on_yellow(),
+                    ResultPlacement::Bad(b) => Span::styled(
+                        String::from(*b),
+                        Style::default().bg(Color::Red).fg(Color::Black),
+                    ),
+                    ResultPlacement::Good(g) => {
+                        Span::styled(String::from(*g), Style::default().bg(Color::Green))
+                    }
+                    ResultPlacement::Misplaced(m) => {
+                        Span::styled(String::from(*m), Style::default().bg(Color::LightRed))
+                    }
                 })
                 .collect::<Line>(),
-            _ => Line::from("a"),
+            ResultWordle::UnmatchedLens(len_mot, len_guess) => self
+                .guess
+                .chars()
+                .into_iter()
+                .map(|l| Span::styled(String::from(l), Style::default().bg(Color::Black)))
+                .collect(),
+            _ => Line::from("win aa"),
+            //voir le UnmatchedLens, faire la diff entre écrire et soumettre
         };
+    }
+
+    fn add_char(&mut self, char: char) -> () {
+        let last_letter_index = 2;
+        self.set_guess(
+            self.guess.clone()[..last_letter_index].to_string()
+                + String::from(char).as_str()
+                + &self.guess.clone()[last_letter_index..],
+        );
+    }
+
+    fn backspace(&mut self) -> () {
+        // self.guess.
     }
 }
 
@@ -144,7 +171,45 @@ impl Ui for Tui {
                     continue;
                 }
                 if key.modifiers != event::KeyModifiers::SHIFT {
-                    continue;
+                    if vec![
+                        event::KeyCode::Char('a'),
+                        event::KeyCode::Char('b'),
+                        event::KeyCode::Char('c'),
+                        event::KeyCode::Char('d'),
+                        event::KeyCode::Char('e'),
+                        event::KeyCode::Char('f'),
+                        event::KeyCode::Char('g'),
+                        event::KeyCode::Char('h'),
+                        event::KeyCode::Char('i'),
+                        event::KeyCode::Char('j'),
+                        event::KeyCode::Char('k'),
+                        event::KeyCode::Char('l'),
+                        event::KeyCode::Char('m'),
+                        event::KeyCode::Char('n'),
+                        event::KeyCode::Char('o'),
+                        event::KeyCode::Char('p'),
+                        event::KeyCode::Char('q'),
+                        event::KeyCode::Char('r'),
+                        event::KeyCode::Char('s'),
+                        event::KeyCode::Char('t'),
+                        event::KeyCode::Char('u'),
+                        event::KeyCode::Char('v'),
+                        event::KeyCode::Char('w'),
+                        event::KeyCode::Char('x'),
+                        event::KeyCode::Char('y'),
+                        event::KeyCode::Char('z'),
+                    ]
+                    .contains(&key.code)
+                    {
+                        match key.code {
+                            event::KeyCode::Char(c) => {
+                                guess_object.add_char(c);
+                                // println!("guess : {}", guess_object.guess);
+                            }
+                            //autre cas gerer par le if d'au dessus
+                            _ => {}
+                        }
+                    }
                 }
                 match key.code {
                     event::KeyCode::Char('M') => {
