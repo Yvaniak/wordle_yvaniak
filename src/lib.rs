@@ -39,16 +39,12 @@ impl App {
     }
     pub fn build(config: Config) -> Result<App, Box<dyn Error>> {
         match config.ui {
-            ConfigUi::Cli => {
-                Ok(App {
-                    instance: UiEnum::ItemCli(Cli::new()),
-                })
-            }
-            ConfigUi::Tui => {
-                Ok(App {
-                    instance: UiEnum::ItemTui(Tui::new()),
-                })
-            }
+            ConfigUi::Cli => Ok(App {
+                instance: UiEnum::ItemCli(Cli::new()),
+            }),
+            ConfigUi::Tui => Ok(App {
+                instance: UiEnum::ItemTui(Tui::new()),
+            }),
             _ => Err("tui and gui not implemented yet".into()),
         }
     }
