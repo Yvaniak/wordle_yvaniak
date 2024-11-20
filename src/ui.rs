@@ -78,6 +78,7 @@ pub enum ResultPartie {
     Stay,
 }
 
+//TODO:Verifier que ça peut vraiment renvoyer une erreur
 pub fn traitement_wordle(ref_mot: &String, guess: String) -> Result<ResultWordle, Box<dyn Error>> {
     if guess == *ref_mot {
         return Ok(ResultWordle::Win);
