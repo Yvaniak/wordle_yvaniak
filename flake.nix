@@ -108,14 +108,6 @@
           };
 
           wordle_yvaniak = self.packages.${pkgs.system}.default;
-
-          docker = pkgs.dockerTools.buildLayeredImage {
-            name = "wordle-yvaniak";
-            tag = "latest";
-            config.Cmd = [ "${self.packages.${pkgs.system}.default}/bin/wordle-yvaniak" ];
-          };
-
-
         };
       }
     );
