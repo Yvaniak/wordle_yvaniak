@@ -72,6 +72,10 @@
             #fmt nix
             pkgs.nixpkgs-fmt
 
+            #a voir
+            pkgs.cargo-audit
+            pkgs.cargo-deny
+
             #scripts utilitaires
             mylib.fmt
             mylib.lint
