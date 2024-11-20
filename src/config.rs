@@ -1,3 +1,5 @@
+use clap::{crate_description, crate_name, crate_version, Command};
+
 #[derive(Debug, PartialEq)]
 pub enum ConfigUi {
     Cli,
@@ -20,6 +22,28 @@ impl Config {
             Some(arg) if arg == "gui" => ConfigUi::Gui,
             Some(_) => return Err("doesn't know this interface, the choices are gui, tui and cli"),
             None => ConfigUi::Cli,
+        };
+
+        Ok(Config { ui: lanceur })
+    }
+
+    pub fn cmd() -> Result<Config, &'static str> {
+        let matches = Command::new(crate_name!())
+            .about(crate_description!())
+            .version(crate_version!())
+            .subcommand(Command::new("cli").about("launch the wordle in the cli mode"))
+            .subcommand(Command::new("tui").about("launch the wordle in the tui mode"))
+            .subcommand(Command::new("gui").about("launch the wordle in the gui mode"))
+            .get_matches();
+
+        let lanceur = match matches.subcommand() {
+            Some(("cli", _)) => ConfigUi::Cli,
+            Some(("tui", _)) => ConfigUi::Tui,
+            Some(("gui", _)) => ConfigUi::Gui,
+            None => ConfigUi::Cli,
+            Some((&_, _)) => {
+                return Err("doesn't know this interface, the choices are gui, tui and cli")
+            }
         };
 
         Ok(Config { ui: lanceur })
