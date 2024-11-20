@@ -62,3 +62,23 @@ pub fn launch(config: config::Config) -> Result<(), Box<dyn Error>> {
 
     return app.run();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    //TODO: app run, fin build et launch
+    #[test]
+    fn app_build_with_config_sucess() {
+        let config = Config { ui: ConfigUi::Cli };
+        let res = App::build(config);
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn app_build_with_config_fail_because_gui_not_implemented() {
+        let config = Config { ui: ConfigUi::Gui };
+        let res = App::build(config);
+        assert!(res.is_err());
+    }
+}
