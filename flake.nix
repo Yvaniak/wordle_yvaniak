@@ -1,5 +1,5 @@
 {
-  description = "wordle-yvaniak";
+  description = "wordle_yvaniak";
 
   inputs = {
     flake-utils = {
@@ -102,7 +102,7 @@
             doCheck = true; #pas sûr que ce soit faux par défaut mais on sait jamais
 
             meta = {
-              homepage = "https://github.com/Yvaniak/wordle-yvaniak";
+              homepage = "https://github.com/Yvaniak/wordle_yvaniak";
               licence = pkgs.stdenv.lib.licences.MIT;
             };
           };
