@@ -33,22 +33,10 @@
               cargo fix
             '';
           };
-          update = pkgs.writeShellApplication {
-            name = "update";
-            text = ''
-              cargo update
-            '';
-          };
-          install_deps = pkgs.writeShellApplication {
-            name = "install_deps";
-            text = ''
-              cargo fetch
-            '';
-          };
         };
       in
       {
-        formatter.pkgs = pkgs.nixpkgs-fmt;
+        formatter = pkgs.nixpkgs-fmt;
 
         devShells.default = pkgs.mkShell {
           inputsFrom = [ self.packages.${pkgs.system}.default ];
@@ -79,8 +67,6 @@
             #scripts utilitaires
             mylib.fmt
             mylib.lint
-            mylib.update
-            mylib.install_deps
           ];
 
           env = {
