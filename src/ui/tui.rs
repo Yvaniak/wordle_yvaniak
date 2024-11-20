@@ -168,7 +168,8 @@ impl Ui for Tui {
                 if key.kind == event::KeyEventKind::Release {
                     continue;
                 }
-                if key.modifiers != event::KeyModifiers::SHIFT && vec![
+                if key.modifiers != event::KeyModifiers::SHIFT
+                    && vec![
                         event::KeyCode::Char('a'),
                         event::KeyCode::Char('b'),
                         event::KeyCode::Char('c'),
@@ -196,7 +197,8 @@ impl Ui for Tui {
                         event::KeyCode::Char('y'),
                         event::KeyCode::Char('z'),
                     ]
-                    .contains(&key.code) {
+                    .contains(&key.code)
+                {
                     if let event::KeyCode::Char(c) = key.code {
                         guess_object.add_char(c);
                         // println!("guess : {}", guess_object.guess);
