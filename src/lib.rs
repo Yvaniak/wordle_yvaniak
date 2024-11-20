@@ -40,16 +40,16 @@ impl App {
     pub fn build(config: Config) -> Result<App, Box<dyn Error>> {
         match config.ui {
             ConfigUi::Cli => {
-                return Ok(App {
+                Ok(App {
                     instance: UiEnum::ItemCli(Cli::new()),
-                });
+                })
             }
             ConfigUi::Tui => {
-                return Ok(App {
+                Ok(App {
                     instance: UiEnum::ItemTui(Tui::new()),
                 })
             }
-            _ => return Err("tui and gui not implemented yet".into()),
+            _ => Err("tui and gui not implemented yet".into()),
         }
     }
 }
@@ -60,5 +60,25 @@ pub fn launch(config: config::Config) -> Result<(), Box<dyn Error>> {
         Ok(app) => app,
     };
 
-    return app.run();
+    app.run()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    //TODO: app run, fin build et launch
+    #[test]
+    fn app_build_with_config_sucess() {
+        let config = Config { ui: ConfigUi::Cli };
+        let res = App::build(config);
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn app_build_with_config_fail_because_gui_not_implemented() {
+        let config = Config { ui: ConfigUi::Gui };
+        let res = App::build(config);
+        assert!(res.is_err());
+    }
 }

@@ -17,7 +17,7 @@ pub enum UiEnum {
 }
 
 impl UiEnum {
-    pub fn welcoming(&self) -> () {
+    pub fn welcoming(&self) {
         match self {
             UiEnum::ItemTui(tui) => tui.welcoming(),
             UiEnum::ItemCli(cli) => cli.welcoming(),
@@ -38,7 +38,7 @@ impl UiEnum {
         }
     }
 
-    pub fn quit(&mut self) -> () {
+    pub fn quit(&mut self) {
         match self {
             UiEnum::ItemCli(cli) => cli.quit(),
             UiEnum::ItemTui(tui) => tui.quit(),
@@ -49,13 +49,13 @@ impl UiEnum {
 pub trait Ui {
     fn new() -> Self;
 
-    fn welcoming(&self) -> ();
+    fn welcoming(&self);
 
     fn menu(&mut self) -> ChoixMenu;
 
     fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie;
 
-    fn quit(&mut self) -> ();
+    fn quit(&mut self);
 }
 
 #[derive(Debug, PartialEq)]
@@ -78,6 +78,7 @@ pub enum ResultPartie {
     Stay,
 }
 
+//TODO:Verifier que ça peut vraiment renvoyer une erreur
 pub fn traitement_wordle(ref_mot: &String, guess: String) -> Result<ResultWordle, Box<dyn Error>> {
     if guess == *ref_mot {
         return Ok(ResultWordle::Win);
@@ -91,7 +92,7 @@ pub fn traitement_wordle(ref_mot: &String, guess: String) -> Result<ResultWordle
 
     assert!(len_guess == len_mot);
 
-    return Placement::build(ref_mot, guess);
+    Placement::build(ref_mot, guess)
 }
 
 #[derive(Debug, PartialEq)]
@@ -108,21 +109,19 @@ impl Placement {
         for (i_l, l) in chars_guess.clone().enumerate() {
             if !(*ref_mot).contains(l) {
                 result.push(ResultPlacement::Bad(l));
+            } else if chars_mot.clone().nth(i_l).unwrap() == l {
+                result.push(ResultPlacement::Good(l));
             } else {
-                if chars_mot.clone().nth(i_l).unwrap() == l {
-                    result.push(ResultPlacement::Good(l));
+                let letters_well_placed: u32 =
+                    count_of_this_letter_well_placed(l, &chars_mot, &chars_guess);
+
+                let letters_not_well_placed: u32 =
+                    count_of_this_letter_total(l, &chars_mot, &chars_guess);
+
+                if letters_not_well_placed - letters_well_placed < 2 {
+                    result.push(ResultPlacement::Bad(l));
                 } else {
-                    let letters_well_placed: u32 =
-                        count_of_this_letter_well_placed(l, &chars_mot, &chars_guess);
-
-                    let letters_not_well_placed: u32 =
-                        count_of_this_letter_total(l, &chars_mot, &chars_guess);
-
-                    if letters_not_well_placed - letters_well_placed < 2 {
-                        result.push(ResultPlacement::Bad(l));
-                    } else {
-                        result.push(ResultPlacement::Misplaced(l));
-                    }
+                    result.push(ResultPlacement::Misplaced(l));
                 }
             }
         }
@@ -142,7 +141,7 @@ fn count_of_this_letter_well_placed(
             cpt += 1;
         }
     }
-    return cpt;
+    cpt
 }
 
 fn count_of_this_letter_total(l: char, chars_mot: &Chars<'_>, chars_guess: &Chars<'_>) -> u32 {
@@ -152,7 +151,7 @@ fn count_of_this_letter_total(l: char, chars_mot: &Chars<'_>, chars_guess: &Char
             cpt += 1;
         }
     }
-    return cpt;
+    cpt
 }
 
 #[cfg(test)]

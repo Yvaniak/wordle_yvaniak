@@ -1,17 +1,16 @@
-use super::{traitement_wordle, Placement, ResultPartie, ResultPlacement, ResultWordle};
+use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
 
-use ratatui::crossterm::style::StyledContent;
 use ratatui::crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use ratatui::text::{Line, Span, Text, ToLine, ToText};
+use ratatui::text::{Line, Span, Text, ToText};
 use ratatui::{
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Flex, Layout, Position, Rect},
-    style::{Style, Stylize},
+    style::{Color, Style, Stylize},
     widgets::{Block, Paragraph},
     Terminal,
 };
@@ -20,7 +19,7 @@ use std::rc::Rc;
 
 use tui_big_text::{BigText, PixelSize};
 
-use std::io::{self, Lines, Stderr};
+use std::io::{self, Stderr};
 pub struct Tui {
     terminal: Terminal<CrosstermBackend<Stderr>>,
     start_area: Rect,
@@ -38,14 +37,14 @@ impl GuessObject<'_> {
     fn new(mot: &String) -> Self {
         let guess = " ".repeat(mot.chars().count());
         GuessObject {
-            etat: traitement_wordle(&mot, guess.clone()).unwrap(),
+            etat: traitement_wordle(mot, guess.clone()).unwrap(),
             guess,
             mot: mot.clone(),
-            affichage: Line::from("a"),
+            affichage: Line::from(""),
         }
     }
 
-    fn set_guess(&mut self, guess: String) -> () {
+    fn set_guess(&mut self, guess: String) {
         self.guess = guess;
         self.etat = traitement_wordle(&self.mot, self.guess.clone()).unwrap();
         self.affichage = match &self.etat {
@@ -53,13 +52,39 @@ impl GuessObject<'_> {
                 .result
                 .iter()
                 .map(|l| match l {
-                    ResultPlacement::Bad(b) => String::from(*b).on_red(),
-                    ResultPlacement::Good(g) => String::from(*g).on_green(),
-                    ResultPlacement::Misplaced(m) => String::from(*m).on_yellow(),
+                    ResultPlacement::Bad(b) => Span::styled(
+                        String::from(*b),
+                        Style::default().bg(Color::Red).fg(Color::Black),
+                    ),
+                    ResultPlacement::Good(g) => {
+                        Span::styled(String::from(*g), Style::default().bg(Color::Green))
+                    }
+                    ResultPlacement::Misplaced(m) => {
+                        Span::styled(String::from(*m), Style::default().bg(Color::LightRed))
+                    }
                 })
                 .collect::<Line>(),
-            _ => Line::from("a"),
+            ResultWordle::UnmatchedLens(len_mot, len_guess) => self
+                .guess
+                .chars()
+                .map(|l| Span::styled(String::from(l), Style::default().bg(Color::Black)))
+                .collect(),
+            _ => Line::from("win aa"),
+            //voir le UnmatchedLens, faire la diff entre écrire et soumettre
         };
+    }
+
+    fn add_char(&mut self, char: char) {
+        let last_letter_index = 2;
+        self.set_guess(
+            self.guess.clone()[..last_letter_index].to_string()
+                + String::from(char).as_str()
+                + &self.guess.clone()[last_letter_index..],
+        );
+    }
+
+    fn backspace(&mut self) {
+        // self.guess.
     }
 }
 
@@ -81,7 +106,7 @@ impl Ui for Tui {
         }
     }
 
-    fn quit(&mut self) -> () {
+    fn quit(&mut self) {
         // restore terminal
         disable_raw_mode().expect("ratatui stuff, should change if appears");
         execute!(
@@ -96,7 +121,7 @@ impl Ui for Tui {
     }
 
     //TODO :
-    fn welcoming(&self) -> () {
+    fn welcoming(&self) {
         // if let Event::Key(key) =
         //     event::read().expect("ratatui stuff, should change the api if appears")
         // {
@@ -143,8 +168,39 @@ impl Ui for Tui {
                 if key.kind == event::KeyEventKind::Release {
                     continue;
                 }
-                if key.modifiers != event::KeyModifiers::SHIFT {
-                    continue;
+                if key.modifiers != event::KeyModifiers::SHIFT && vec![
+                        event::KeyCode::Char('a'),
+                        event::KeyCode::Char('b'),
+                        event::KeyCode::Char('c'),
+                        event::KeyCode::Char('d'),
+                        event::KeyCode::Char('e'),
+                        event::KeyCode::Char('f'),
+                        event::KeyCode::Char('g'),
+                        event::KeyCode::Char('h'),
+                        event::KeyCode::Char('i'),
+                        event::KeyCode::Char('j'),
+                        event::KeyCode::Char('k'),
+                        event::KeyCode::Char('l'),
+                        event::KeyCode::Char('m'),
+                        event::KeyCode::Char('n'),
+                        event::KeyCode::Char('o'),
+                        event::KeyCode::Char('p'),
+                        event::KeyCode::Char('q'),
+                        event::KeyCode::Char('r'),
+                        event::KeyCode::Char('s'),
+                        event::KeyCode::Char('t'),
+                        event::KeyCode::Char('u'),
+                        event::KeyCode::Char('v'),
+                        event::KeyCode::Char('w'),
+                        event::KeyCode::Char('x'),
+                        event::KeyCode::Char('y'),
+                        event::KeyCode::Char('z'),
+                    ]
+                    .contains(&key.code) {
+                    if let event::KeyCode::Char(c) = key.code {
+                        guess_object.add_char(c);
+                        // println!("guess : {}", guess_object.guess);
+                    }
                 }
                 match key.code {
                     event::KeyCode::Char('M') => {
@@ -159,18 +215,15 @@ impl Ui for Tui {
             if let Event::Mouse(click) =
                 event::read().expect("ratatui stuff, should change if appears")
             {
-                match click.kind {
-                    event::MouseEventKind::Up(_) => {
-                        let pos_mouse = Position::new(click.column, click.row);
-                        if self.start_area.contains(pos_mouse) {
-                            return ResultPartie::Stay;
-                        } else if self.quit_area.contains(pos_mouse) {
-                            return ResultPartie::Quit;
-                        } else {
-                            println!("Pas de choix encore");
-                        }
+                if let event::MouseEventKind::Up(_) = click.kind {
+                    let pos_mouse = Position::new(click.column, click.row);
+                    if self.start_area.contains(pos_mouse) {
+                        return ResultPartie::Stay;
+                    } else if self.quit_area.contains(pos_mouse) {
+                        return ResultPartie::Quit;
+                    } else {
+                        println!("Pas de choix encore");
                     }
-                    _ => {}
                 }
             }
         }
@@ -222,18 +275,15 @@ impl Ui for Tui {
             if let Event::Mouse(click) =
                 event::read().expect("ratatui stuff, should change if appears")
             {
-                match click.kind {
-                    event::MouseEventKind::Up(_) => {
-                        let pos_mouse = Position::new(click.column, click.row);
-                        if self.start_area.contains(pos_mouse) {
-                            return ChoixMenu::Start;
-                        } else if self.quit_area.contains(pos_mouse) {
-                            return ChoixMenu::Quit;
-                        } else {
-                            println!("Pas de choix encore");
-                        }
+                if let event::MouseEventKind::Up(_) = click.kind {
+                    let pos_mouse = Position::new(click.column, click.row);
+                    if self.start_area.contains(pos_mouse) {
+                        return ChoixMenu::Start;
+                    } else if self.quit_area.contains(pos_mouse) {
+                        return ChoixMenu::Quit;
+                    } else {
+                        println!("Pas de choix encore");
                     }
-                    _ => {}
                 }
             }
         }
@@ -258,7 +308,7 @@ fn my_flex(len: u16, area: Rect) -> Rect {
     lay[0]
 }
 
-fn my_paragraph<'a>(color: ratatui::style::Color, content: Text<'a>) -> Paragraph<'a> {
+fn my_paragraph(color: ratatui::style::Color, content: Text<'_>) -> Paragraph<'_> {
     let block = Block::bordered().style(Style::new().bg(color).fg(ratatui::style::Color::Black));
     Paragraph::new(content).block(block).centered().bold()
 }

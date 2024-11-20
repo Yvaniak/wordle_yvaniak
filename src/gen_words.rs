@@ -1,7 +1,7 @@
 use rand::Rng;
 
 fn get_the_words() -> Vec<String> {
-    return vec!["thé", "café", "faculté", "lycée", "ordinateur", "téléphone"]
+    return ["thé", "café", "faculté", "lycée", "ordinateur", "téléphone"]
         .iter()
         .map(|m| String::from(*m))
         .collect();

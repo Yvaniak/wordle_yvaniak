@@ -1,5 +1,5 @@
 {
-  description = "wordle-yvaniak";
+  description = "wordle_yvaniak";
 
   inputs = {
     flake-utils = {
@@ -33,22 +33,10 @@
               cargo fix
             '';
           };
-          update = pkgs.writeShellApplication {
-            name = "update";
-            text = ''
-              cargo update
-            '';
-          };
-          install_deps = pkgs.writeShellApplication {
-            name = "install_deps";
-            text = ''
-              cargo fetch
-            '';
-          };
         };
       in
       {
-        formatter.pkgs = pkgs.nixpkgs-fmt;
+        formatter = pkgs.nixpkgs-fmt;
 
         devShells.default = pkgs.mkShell {
           inputsFrom = [ self.packages.${pkgs.system}.default ];
@@ -79,8 +67,6 @@
             #scripts utilitaires
             mylib.fmt
             mylib.lint
-            mylib.update
-            mylib.install_deps
           ];
 
           env = {
@@ -102,20 +88,12 @@
             doCheck = true; #pas sûr que ce soit faux par défaut mais on sait jamais
 
             meta = {
-              homepage = "https://github.com/Yvaniak/wordle-yvaniak";
+              homepage = "https://github.com/Yvaniak/wordle_yvaniak";
               licence = pkgs.stdenv.lib.licences.MIT;
             };
           };
 
           wordle_yvaniak = self.packages.${pkgs.system}.default;
-
-          docker = pkgs.dockerTools.buildLayeredImage {
-            name = "wordle-yvaniak";
-            tag = "latest";
-            config.Cmd = [ "${self.packages.${pkgs.system}.default}/bin/wordle-yvaniak" ];
-          };
-
-
         };
       }
     );

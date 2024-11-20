@@ -8,9 +8,9 @@ impl Ui for Cli {
         Self {}
     }
 
-    fn quit(&mut self) -> () {}
+    fn quit(&mut self) {}
 
-    fn welcoming(&self) -> () {
+    fn welcoming(&self) {
         println!("Welcome in the menu of this worlde game !");
     }
 
