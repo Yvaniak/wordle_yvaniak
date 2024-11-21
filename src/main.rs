@@ -1,9 +1,8 @@
-use std::env;
 use std::process;
 use wordle_yvaniak::config::Config;
 
 fn main() {
-    let config: Config = Config::build(env::args()).unwrap_or_else(|err| {
+    let config: Config = Config::cmd().unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });
@@ -12,3 +11,5 @@ fn main() {
         process::exit(1);
     }
 }
+
+//TODO: Test main

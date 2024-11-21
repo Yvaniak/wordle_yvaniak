@@ -64,7 +64,7 @@ impl GuessObject<'_> {
                     }
                 })
                 .collect::<Line>(),
-            ResultWordle::UnmatchedLens(len_mot, len_guess) => self
+            ResultWordle::UnmatchedLens(..) => self
                 .guess
                 .chars()
                 .map(|l| Span::styled(String::from(l), Style::default().bg(Color::Black)))
@@ -83,7 +83,7 @@ impl GuessObject<'_> {
         );
     }
 
-    fn backspace(&mut self) {
+    fn _backspace(&mut self) {
         // self.guess.
     }
 }
@@ -130,7 +130,7 @@ impl Ui for Tui {
     }
 
     //TODO:
-    fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie {
+    fn partie(&mut self, mot: String, _guess_test: Option<String>) -> ResultPartie {
         // let mut guess: String = String::new();
         //TODO: mettre guess et etat guess dans un struct guess_object avec un builder pour ça et une
         //impl pour set l'état après
@@ -168,7 +168,8 @@ impl Ui for Tui {
                 if key.kind == event::KeyEventKind::Release {
                     continue;
                 }
-                if key.modifiers != event::KeyModifiers::SHIFT && vec![
+                if key.modifiers != event::KeyModifiers::SHIFT
+                    && vec![
                         event::KeyCode::Char('a'),
                         event::KeyCode::Char('b'),
                         event::KeyCode::Char('c'),
@@ -196,7 +197,8 @@ impl Ui for Tui {
                         event::KeyCode::Char('y'),
                         event::KeyCode::Char('z'),
                     ]
-                    .contains(&key.code) {
+                    .contains(&key.code)
+                {
                     if let event::KeyCode::Char(c) = key.code {
                         guess_object.add_char(c);
                         // println!("guess : {}", guess_object.guess);

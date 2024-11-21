@@ -6,10 +6,18 @@
       url = "github:numtide/flake-utils";
     };
 
-    naersk.url = "github:nix-community/naersk";
+    crane.url = "github:ipetkov/crane";
+
+    advisory-db = {
+      url = "github:rustsec/advisory-db";
+      flake = false;
+    };
+
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
+    nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, advisory-db, ... }@inputs:
     inputs.flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -18,14 +26,77 @@
 
         naersk' = pkgs.callPackage inputs.naersk { };
 
+        craneLib = inputs.crane.mkLib pkgs;
+        src = ./.;
+
+        # Build *just* the cargo dependencies, so we can reuse
+        # all of that work (e.g. via cachix) when running in CI
+        cargoArtifacts = craneLib.buildDepsOnly {
+          inherit src;
+        };
+
+        # Run clippy (and deny all warnings) on the crate source,
+        # resuing the dependency artifacts (e.g. from build scripts or
+        # proc-macros) from above.
+        #
+        # Note that this is done as a separate derivation so it
+        # does not impact building just the crate by itself.
+        wordle_yvaniak-clippy = craneLib.cargoClippy {
+          inherit cargoArtifacts src;
+          cargoClippyExtraArgs = "-- --deny warnings";
+          buildPhaseCargoCommand = "cargo clippy --profile release && cargo fix";
+        };
+
+        wordle_yvaniak-cargo-audit = craneLib.cargoAudit {
+          inherit src advisory-db;
+        };
+
+        wordle_yvaniak-cargo-doc = craneLib.cargoDoc {
+          inherit cargoArtifacts src;
+        };
+
+        wordle_yvaniak-cargo-doc-test = craneLib.cargoDocTest {
+          inherit cargoArtifacts src;
+        };
+
+        wordle_yvaniak-cargo-deny = craneLib.cargoDeny {
+          inherit src;
+        };
+
+        wordle_yvaniak-cargo-fmt = craneLib.cargoFmt {
+          inherit src;
+        };
+
+        wordle_yvaniak-taplo-fmt = craneLib.taploFmt {
+          inherit src;
+        };
+
+        wordle_yvaniak-cargo-nextest = craneLib.cargoNextest {
+          inherit cargoArtifacts src;
+        };
+
+        wordle_yvaniak-cargo-update = craneLib.buildPackage {
+          inherit cargoArtifacts src;
+          cargoBuildCommand = "cargo update && cargo build --profile release";
+        };
+
+        # Build the actual crate itself, reusing the dependency
+        # artifacts from above.
+        worlde_yvaniak = craneLib.buildPackage {
+          inherit cargoArtifacts src;
+            meta = {
+              homepage = "https://github.com/Yvaniak/wordle_yvaniak";
+              licence = pkgs.stdenv.lib.licences.MIT;
+            };
+        };
+
+        # Also run the crate tests under cargo-tarpaulin so that we can keep
+        # track of code coverage
+        wordle_yvaniak-coverage = craneLib.cargoTarpaulin {
+          inherit cargoArtifacts src;
+        };
+
         mylib = {
-          fmt = pkgs.writeShellApplication {
-            name = "fmt";
-            text = ''
-              nixpkgs-fmt .
-              cargo fmt
-            '';
-          };
           lint = pkgs.writeShellApplication {
             name = "lint";
             text = ''
@@ -65,7 +136,6 @@
             pkgs.cargo-deny
 
             #scripts utilitaires
-            mylib.fmt
             mylib.lint
           ];
 
@@ -79,22 +149,28 @@
         };
 
         packages = {
-          default = naersk'.buildPackage {
-            nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
 
-            src = ./.;
-            doUnpack = false;
-
-            doCheck = true; #pas sûr que ce soit faux par défaut mais on sait jamais
-
-            meta = {
-              homepage = "https://github.com/Yvaniak/wordle_yvaniak";
-              licence = pkgs.stdenv.lib.licences.MIT;
-            };
-          };
+          default = worlde_yvaniak;
 
           wordle_yvaniak = self.packages.${pkgs.system}.default;
         };
+        
+        checks = {
+          inherit
+            worlde_yvaniak
+            wordle_yvaniak-clippy
+            wordle_yvaniak-cargo-audit
+            wordle_yvaniak-coverage
+            wordle_yvaniak-cargo-deny
+            wordle_yvaniak-cargo-doc
+            wordle_yvaniak-cargo-doc-test
+            wordle_yvaniak-cargo-fmt
+            wordle_yvaniak-cargo-nextest
+            wordle_yvaniak-cargo-update
+            wordle_yvaniak-taplo-fmt;
+        };
+
+        packages.githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks; };
       }
     );
 }
