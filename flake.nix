@@ -6,8 +6,6 @@
       url = "github:numtide/flake-utils";
     };
 
-    naersk.url = "github:nix-community/naersk";
-
     crane.url = "github:ipetkov/crane";
 
     advisory-db = {
@@ -86,6 +84,10 @@
         # artifacts from above.
         worlde_yvaniak = craneLib.buildPackage {
           inherit cargoArtifacts src;
+            meta = {
+              homepage = "https://github.com/Yvaniak/wordle_yvaniak";
+              licence = pkgs.stdenv.lib.licences.MIT;
+            };
         };
 
         # Also run the crate tests under cargo-tarpaulin so that we can keep
@@ -147,41 +149,28 @@
         };
 
         packages = {
-          crane-test = my-crate;
-          default = naersk'.buildPackage {
-            nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
 
-            src = ./.;
-            doUnpack = false;
-
-            doCheck = true; #pas sûr que ce soit faux par défaut mais on sait jamais
-
-            meta = {
-              homepage = "https://github.com/Yvaniak/wordle_yvaniak";
-              licence = pkgs.stdenv.lib.licences.MIT;
-            };
-          };
+          default = worlde_yvaniak;
 
           wordle_yvaniak = self.packages.${pkgs.system}.default;
         };
         
         checks = {
           inherit
-            my-crate
-            my-crate-clippy
-            my-crate-coverage
-            my-crate-cargo-audit
-            my-crate-cargo-deny
-            my-crate-cargo-doc
-            my-crate-cargo-doc-test
-            my-crate-cargo-fmt
-            my-crate-cargo-llvm-cov
-            my-crate-cargo-nextest
-            my-crate-taplo-fmt
-            my-crane-cargo-update;
+            worlde_yvaniak
+            wordle_yvaniak-clippy
+            wordle_yvaniak-cargo-audit
+            wordle_yvaniak-coverage
+            wordle_yvaniak-cargo-deny
+            wordle_yvaniak-cargo-doc
+            wordle_yvaniak-cargo-doc-test
+            wordle_yvaniak-cargo-fmt
+            wordle_yvaniak-cargo-nextest
+            wordle_yvaniak-cargo-update
+            wordle_yvaniak-taplo-fmt;
         };
 
-        packages.githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks; };
+        # packages.githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks; };
       }
     );
 }
