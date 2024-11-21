@@ -90,8 +90,7 @@ impl Ui for Cli {
                     println!("You guessed a word of {len_guess} letters but the word to guess contains {len_mot} letters.");
                 }
                 Ok(ResultWordle::Placement(placement)) => {
-                    let mut cpt = 0;
-                    for i in placement.result {
+                    for (cpt, i) in placement.result.into_iter().enumerate() {
                         match i {
                             ResultPlacement::Misplaced(l) => {
                                 println!("\nThe letter {l} in position {cpt} is misplaced");
@@ -101,7 +100,6 @@ impl Ui for Cli {
                             }
                             ResultPlacement::Good(_l) => {}
                         }
-                        cpt += 1;
                     }
                 }
                 Err(_e) => continue,

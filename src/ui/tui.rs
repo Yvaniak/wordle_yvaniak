@@ -64,7 +64,7 @@ impl GuessObject<'_> {
                     }
                 })
                 .collect::<Line>(),
-            ResultWordle::UnmatchedLens(len_mot, len_guess) => self
+            ResultWordle::UnmatchedLens(..) => self
                 .guess
                 .chars()
                 .map(|l| Span::styled(String::from(l), Style::default().bg(Color::Black)))
@@ -83,7 +83,7 @@ impl GuessObject<'_> {
         );
     }
 
-    fn backspace(&mut self) {
+    fn _backspace(&mut self) {
         // self.guess.
     }
 }
@@ -130,7 +130,7 @@ impl Ui for Tui {
     }
 
     //TODO:
-    fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie {
+    fn partie(&mut self, mot: String, _guess_test: Option<String>) -> ResultPartie {
         // let mut guess: String = String::new();
         //TODO: mettre guess et etat guess dans un struct guess_object avec un builder pour ça et une
         //impl pour set l'état après
