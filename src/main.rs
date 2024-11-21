@@ -13,7 +13,7 @@ fn main() {
 }
 #[cfg(test)]
 mod test {
-    
+
     use assert_cmd::{prelude::*, Command};
 
     #[test]
