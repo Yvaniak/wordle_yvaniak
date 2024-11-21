@@ -37,66 +37,60 @@
           inherit src;
         };
 
-        crateName = craneLib.crateNameFromCargoToml { cargoToml = ./Cargo.toml; };
-
         # Run clippy (and deny all warnings) on the crate source,
         # resuing the dependency artifacts (e.g. from build scripts or
         # proc-macros) from above.
         #
         # Note that this is done as a separate derivation so it
         # does not impact building just the crate by itself.
-        my-crate-clippy = craneLib.cargoClippy {
+        wordle_yvaniak-clippy = craneLib.cargoClippy {
           inherit cargoArtifacts src;
           cargoClippyExtraArgs = "-- --deny warnings";
           buildPhaseCargoCommand = "cargo clippy --profile release && cargo fix";
         };
 
-        my-crate-cargo-audit = craneLib.cargoAudit {
+        wordle_yvaniak-cargo-audit = craneLib.cargoAudit {
           inherit src advisory-db;
         };
 
-        my-crate-cargo-doc = craneLib.cargoDoc {
+        wordle_yvaniak-cargo-doc = craneLib.cargoDoc {
           inherit cargoArtifacts src;
         };
 
-        my-crate-cargo-doc-test = craneLib.cargoDocTest {
+        wordle_yvaniak-cargo-doc-test = craneLib.cargoDocTest {
           inherit cargoArtifacts src;
         };
 
-        my-crate-cargo-deny = craneLib.cargoDeny {
+        wordle_yvaniak-cargo-deny = craneLib.cargoDeny {
           inherit src;
         };
 
-        my-crate-cargo-fmt = craneLib.cargoFmt {
+        wordle_yvaniak-cargo-fmt = craneLib.cargoFmt {
           inherit src;
         };
 
-        my-crate-taplo-fmt = craneLib.taploFmt {
+        wordle_yvaniak-taplo-fmt = craneLib.taploFmt {
           inherit src;
         };
 
-        my-crate-cargo-llvm-cov = craneLib.cargoLlvmCov {
+        wordle_yvaniak-cargo-nextest = craneLib.cargoNextest {
           inherit cargoArtifacts src;
         };
 
-        my-crate-cargo-nextest = craneLib.cargoNextest {
-          inherit cargoArtifacts src;
-        };
-
-        my-crane-cargo-update = craneLib.buildPackage {
+        wordle_yvaniak-cargo-update = craneLib.buildPackage {
           inherit cargoArtifacts src;
           cargoBuildCommand = "cargo update && cargo build --profile release";
         };
 
         # Build the actual crate itself, reusing the dependency
         # artifacts from above.
-        my-crate = craneLib.buildPackage {
+        worlde_yvaniak = craneLib.buildPackage {
           inherit cargoArtifacts src;
         };
 
         # Also run the crate tests under cargo-tarpaulin so that we can keep
         # track of code coverage
-        my-crate-coverage = craneLib.cargoTarpaulin {
+        wordle_yvaniak-coverage = craneLib.cargoTarpaulin {
           inherit cargoArtifacts src;
         };
 
