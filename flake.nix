@@ -82,7 +82,7 @@
 
         # Build the actual crate itself, reusing the dependency
         # artifacts from above.
-        worlde_yvaniak = craneLib.buildPackage {
+        wordle_yvaniak = craneLib.buildPackage {
           inherit cargoArtifacts src;
             meta = {
               homepage = "https://github.com/Yvaniak/wordle_yvaniak";
@@ -150,14 +150,14 @@
 
         packages = {
 
-          default = worlde_yvaniak;
+          default = wordle_yvaniak;
 
           wordle_yvaniak = self.packages.${pkgs.system}.default;
         };
         
         checks = {
           inherit
-            worlde_yvaniak
+            wordle_yvaniak
             wordle_yvaniak-clippy
             wordle_yvaniak-cargo-audit
             wordle_yvaniak-coverage

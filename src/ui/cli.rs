@@ -11,7 +11,7 @@ impl Ui for Cli {
     fn quit(&mut self) {}
 
     fn welcoming(&self) {
-        println!("Welcome in the menu of this worlde game !");
+        println!("Welcome in the menu of this wordle game !");
     }
 
     fn menu(&mut self) -> ChoixMenu {
