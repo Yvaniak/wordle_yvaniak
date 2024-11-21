@@ -69,7 +69,20 @@ impl Config {
 
 #[cfg(test)]
 mod tests {
+    use std::any::{Any, TypeId};
+
     use super::*;
+
+    #[test]
+    fn new_subcmd_correct_name() {
+        let name = Str::from("cli");
+        assert_eq!(new_subcmd(name).get_name(), "cli");
+    }
+
+    #[test]
+    fn new_cmd_dont_panic() {
+        assert_eq!(new_cmd().type_id(), TypeId::of::<Command>());
+    }
 
     #[test]
     fn build_config_cli() {
