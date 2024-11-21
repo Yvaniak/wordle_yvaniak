@@ -107,6 +107,7 @@
         # track of code coverage
         wordle_yvaniak-coverage = craneLib.cargoTarpaulin {
           inherit cargoArtifacts src;
+          cargoTarpaulinExtraArgs = "--skip-clean --out Html --output-dir $out";
           CARGO_PROFILE = "";
         };
 
