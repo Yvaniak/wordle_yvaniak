@@ -14,6 +14,9 @@
       url = "github:rustsec/advisory-db";
       flake = false;
     };
+
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
+    nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, advisory-db, ... }@inputs:
@@ -183,6 +186,8 @@
             my-crate-taplo-fmt
             my-crane-cargo-update;
         };
+
+        packages.githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks; };
       }
     );
 }
