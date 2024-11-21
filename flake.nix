@@ -78,6 +78,19 @@
         wordle_yvaniak-cargo-update = craneLib.buildPackage {
           inherit cargoArtifacts src;
           cargoBuildCommand = "cargo update && cargo build --profile release";
+          pname = "wordle_yvaniak-cargo-update";
+        };
+
+        wordle_yvaniak-cargo-check = craneLib.buildPackage {
+          inherit cargoArtifacts src;
+          cargoBuildCommand = "cargo check";
+          pname = "wordle_yvaniak-cargo-check";
+        };
+
+        wordle_yvaniak-cargo-check-release = craneLib.buildPackage {
+          inherit cargoArtifacts src;
+          cargoBuildCommand = "cargo check --release";
+          pname = "wordle_yvaniak-cargo-check-release";
         };
 
         # Build the actual crate itself, reusing the dependency
@@ -94,6 +107,7 @@
         # track of code coverage
         wordle_yvaniak-coverage = craneLib.cargoTarpaulin {
           inherit cargoArtifacts src;
+          CARGO_PROFILE = "";
         };
 
         mylib = {
@@ -167,6 +181,8 @@
             wordle_yvaniak-cargo-fmt
             wordle_yvaniak-cargo-nextest
             wordle_yvaniak-cargo-update
+            wordle_yvaniak-cargo-check
+            wordle_yvaniak-cargo-check-release
             wordle_yvaniak-taplo-fmt;
         };
 
