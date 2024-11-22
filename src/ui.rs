@@ -31,7 +31,7 @@ impl UiEnum {
         }
     }
 
-    pub fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie {
+    pub fn partie(&mut self, mot: String, guess_test: String) -> ResultPartie {
         match self {
             UiEnum::ItemTui(tui) => tui.partie(mot, guess_test),
             UiEnum::ItemCli(cli) => cli.partie(mot, guess_test),
@@ -53,7 +53,7 @@ pub trait Ui {
 
     fn menu(&mut self) -> ChoixMenu;
 
-    fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie;
+    fn partie(&mut self, mot: String, guess_test: String) -> ResultPartie;
 
     fn quit(&mut self);
 }

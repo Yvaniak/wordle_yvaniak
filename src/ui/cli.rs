@@ -1,6 +1,8 @@
+use inquire::{InquireError, Select};
+
 use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
-use std::io;
+// use std::io;
 pub struct Cli {}
 
 impl Ui for Cli {
@@ -15,33 +17,49 @@ impl Ui for Cli {
     }
 
     fn menu(&mut self) -> ChoixMenu {
-        let mut choix: String = String::new();
+        let _choix: String = String::new();
 
         loop {
-            match std::io::stdin().read_line(&mut choix) {
-                Ok(_str) if choix.trim() == "s" || choix.trim() == "start" => {
-                    return ChoixMenu::Start;
-                }
-                Ok(_str)
-                    if choix.trim() == "quit"
-                        || choix.trim() == "q"
-                        || choix.trim() == "exit"
-                        || choix.trim() == "e" =>
-                {
-                    println!("exitting");
-                    return ChoixMenu::Quit;
-                }
-                Ok(_str) => {
-                    println!("didn't understood that, can you repeat ?");
-                    choix = String::new();
-                    continue;
-                }
-                Err(_e) => continue,
+            let options: Vec<&str> = vec!["Start a game", "Quit the game"];
+            let ans: Result<&str, InquireError> =
+                Select::new("What do you want to do ?", options).prompt();
+            match ans {
+                Ok(choice) => match choice {
+                    "Start a game" => return ChoixMenu::Start,
+                    "Quit the game" => {
+                        println!("Quitting");
+                        return ChoixMenu::Quit;
+                    }
+                    _ => println!("There was an error, please try again"),
+                },
+                Err(_) => println!("There was an error, please try again"),
             }
         }
+        // loop {
+        //     match std::io::stdin().read_line(&mut choix) {
+        //         Ok(_str) if choix.trim() == "s" || choix.trim() == "start" => {
+        //             return ChoixMenu::Start;
+        //         }
+        //         Ok(_str)
+        //             if choix.trim() == "quit"
+        //                 || choix.trim() == "q"
+        //                 || choix.trim() == "exit"
+        //                 || choix.trim() == "e" =>
+        //         {
+        //             println!("exitting");
+        //             return ChoixMenu::Quit;
+        //         }
+        //         Ok(_str) => {
+        //             println!("didn't understood that, can you repeat ?");
+        //             choix = String::new();
+        //             continue;
+        //         }
+        //         Err(_e) => continue,
+        //     }
+        // }
     }
 
-    fn partie(&mut self, mot: String, guess_test: Option<String>) -> ResultPartie {
+    fn partie(&mut self, mot: String, guess: String) -> ResultPartie {
         println!(
             "The wordle game begin ! The word has {} letters",
             mot.chars().count()
@@ -51,21 +69,21 @@ impl Ui for Cli {
 
         loop {
             println!("\nPlease input your guess.");
-            let mut guess: String = String::new();
+            // let mut guess: String = String::new();
 
             //allow the test of partie
-            match &guess_test {
-                Some(value_test) => guess = String::from(value_test),
-                None => {
-                    match io::stdin().read_line(&mut guess) {
-                        Err(_) => {
-                            println!("\nerreur lors de la lecture");
-                            continue;
-                        }
-                        Ok(str) => str,
-                    };
-                }
-            }
+            // match &guess_test {
+            //     Some(value_test) => guess = String::from(value_test),
+            //     None => {
+            //         match io::stdin().read_line(&mut guess) {
+            //             Err(_) => {
+            //                 println!("\nerreur lors de la lecture");
+            //                 continue;
+            //             }
+            //             Ok(str) => str,
+            //         };
+            //     }
+            // }
 
             let guess = guess.trim();
 
@@ -115,28 +133,28 @@ mod tests {
     #[test]
     fn partie_cli_quit() {
         let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), Some(String::from("quit")));
+        let res: ResultPartie = cli.partie(String::new(), String::from("quit"));
         assert_eq!(ResultPartie::Quit, res);
     }
 
     #[test]
     fn partie_cli_exit() {
         let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), Some(String::from("exit")));
+        let res: ResultPartie = cli.partie(String::new(), String::from("exit"));
         assert_eq!(ResultPartie::Quit, res);
     }
 
     #[test]
     fn partie_cli_menu() {
         let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), Some(String::from("menu")));
+        let res: ResultPartie = cli.partie(String::new(), String::from("menu"));
         assert_eq!(ResultPartie::Stay, res);
     }
 
     #[test]
     fn partie_cli_win() {
         let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), Some(String::from("menu")));
+        let res: ResultPartie = cli.partie(String::new(), String::from("menu"));
         assert_eq!(ResultPartie::Stay, res);
     }
 }
