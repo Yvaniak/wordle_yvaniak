@@ -13,8 +13,10 @@
       flake = false;
     };
 
-    nix-github-actions.url = "github:nix-community/nix-github-actions";
-    nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+    nix-github-actions = {
+      url = "github:nix-community/nix-github-actions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, advisory-db, ... }@inputs:
@@ -23,8 +25,6 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-
-        naersk' = pkgs.callPackage inputs.naersk { };
 
         craneLib = inputs.crane.mkLib pkgs;
         src = ./.;
@@ -44,7 +44,6 @@
         wordle_yvaniak-clippy = craneLib.cargoClippy {
           inherit cargoArtifacts src;
           cargoClippyExtraArgs = "-- --deny warnings";
-          buildPhaseCargoCommand = "cargo clippy --profile release && cargo fix";
         };
 
         wordle_yvaniak-cargo-audit = craneLib.cargoAudit {
@@ -78,19 +77,19 @@
         wordle_yvaniak-cargo-update = craneLib.buildPackage {
           inherit cargoArtifacts src;
           cargoBuildCommand = "cargo update && cargo build --profile release";
-          pname = "wordle_yvaniak-cargo-update";
+          pnameSuffix = "-cargo-update";
         };
 
         wordle_yvaniak-cargo-check = craneLib.buildPackage {
           inherit cargoArtifacts src;
           cargoBuildCommand = "cargo check";
-          pname = "wordle_yvaniak-cargo-check";
+          pnameSuffix = "-cargo-check";
         };
 
         wordle_yvaniak-cargo-check-release = craneLib.buildPackage {
           inherit cargoArtifacts src;
           cargoBuildCommand = "cargo check --release";
-          pname = "wordle_yvaniak-cargo-check-release";
+          pnameSuffix = "-cargo-check-release";
         };
 
         # Build the actual crate itself, reusing the dependency
@@ -109,16 +108,6 @@
           inherit cargoArtifacts src;
           cargoTarpaulinExtraArgs = "--skip-clean --out Html --output-dir $out";
           CARGO_PROFILE = "";
-        };
-
-        mylib = {
-          lint = pkgs.writeShellApplication {
-            name = "lint";
-            text = ''
-              cargo clippy
-              cargo fix
-            '';
-          };
         };
       in
       {
@@ -139,19 +128,6 @@
             pkgs.cargo-watch
             #lsp
             pkgs.rust-analyzer
-            #lint
-            pkgs.clippy
-            #fmt rust
-            pkgs.rustfmt
-            #fmt nix
-            pkgs.nixpkgs-fmt
-
-            #a voir
-            pkgs.cargo-audit
-            pkgs.cargo-deny
-
-            #scripts utilitaires
-            mylib.lint
           ];
 
           env = {
@@ -169,7 +145,7 @@
 
           wordle_yvaniak = self.packages.${pkgs.system}.default;
         };
-        
+
         checks = {
           inherit
             wordle_yvaniak
