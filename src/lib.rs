@@ -27,7 +27,7 @@ impl App {
                 }
                 ChoixMenu::Start => self
                     .instance
-                    .partie(gen_words::pick_the_word(), String::from("")),
+                    .partie(gen_words::pick_the_word(), String::from("a")),
             };
 
             match partie_result {

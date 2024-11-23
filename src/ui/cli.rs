@@ -1,9 +1,45 @@
-use inquire::{InquireError, Select};
+use inquire::ui::{Color, Styled};
+use inquire::{InquireError, Select, Text};
 
 use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
 // use std::io;
 pub struct Cli {}
+
+fn get_guess(guess: &String, taille: usize) -> String {
+    loop {
+        if *guess != String::from("") {
+            let guess_inquire = Text::new(
+                format!("What is your guess for the word of {} letters ?", taille).as_str(),
+            )
+            .with_validator(move |g: &str| {
+                if g.chars().count() != taille {
+                    Ok(inquire::validator::Validation::Invalid(
+                        format!(
+                            "You entered a word that was of size {} but the word is of size {}",
+                            g.chars().count(),
+                            taille
+                        )
+                        .into(),
+                    ))
+                } else {
+                    Ok(inquire::validator::Validation::Valid)
+                }
+            })
+            .prompt();
+            match guess_inquire {
+                Ok(guess) => return guess,
+                Err(_) => {
+                    println!(
+                        "An error happened during the processing of your guess, please try again"
+                    );
+                    continue;
+                }
+            }
+        };
+        return guess.clone();
+    }
+}
 
 impl Ui for Cli {
     fn new() -> Self {
@@ -69,6 +105,9 @@ impl Ui for Cli {
 
         loop {
             println!("\nPlease input your guess.");
+
+            let guess = get_guess(&guess, mot.chars().count());
+
             // let mut guess: String = String::new();
 
             //allow the test of partie
