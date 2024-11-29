@@ -1,7 +1,6 @@
 extern crate assert_cli;
 
 mod integration {
-    use assert_cli;
 
     #[test]
     fn tui() {

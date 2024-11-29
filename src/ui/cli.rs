@@ -1,4 +1,3 @@
-use inquire::ui::{Color, Styled};
 use inquire::{InquireError, Select, Text};
 
 use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
@@ -6,9 +5,9 @@ use super::{ChoixMenu, Ui};
 // use std::io;
 pub struct Cli {}
 
-fn get_guess(guess: &String, taille: usize) -> String {
+fn get_guess(guess: &str, taille: usize) -> String {
     loop {
-        if *guess != String::from("") {
+        if !guess.is_empty() {
             let guess_inquire = Text::new(
                 format!("What is your guess for the word of {} letters ?", taille).as_str(),
             )
@@ -37,7 +36,7 @@ fn get_guess(guess: &String, taille: usize) -> String {
                 }
             }
         };
-        return guess.clone();
+        return guess.to_owned();
     }
 }
 
