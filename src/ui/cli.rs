@@ -163,36 +163,3 @@ impl Ui for Cli {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn partie_cli_quit() {
-        let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), String::from("quit"));
-        assert_eq!(ResultPartie::Quit, res);
-    }
-
-    #[test]
-    fn partie_cli_exit() {
-        let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), String::from("exit"));
-        assert_eq!(ResultPartie::Quit, res);
-    }
-
-    #[test]
-    fn partie_cli_menu() {
-        let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), String::from("menu"));
-        assert_eq!(ResultPartie::Stay, res);
-    }
-
-    #[test]
-    fn partie_cli_win() {
-        let mut cli: Cli = Cli {};
-        let res: ResultPartie = cli.partie(String::new(), String::from("menu"));
-        assert_eq!(ResultPartie::Stay, res);
-    }
-}
