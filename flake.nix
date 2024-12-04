@@ -131,20 +131,20 @@
           devShells.default = pkgs.mkShell {
             inputsFrom = [ 
               self.packages.${pkgs.system}.default
-              self.checks.${system}.wordle_yvaniak-clippy
-              self.checks.${system}.wordle_yvaniak-cargo-audit
-              self.checks.${system}.wordle_yvaniak-coverage
-              self.checks.${system}.wordle_yvaniak-cargo-deny
-              self.checks.${system}.wordle_yvaniak-cargo-doc
-              self.checks.${system}.wordle_yvaniak-cargo-doc-test
-              self.checks.${system}.wordle_yvaniak-cargo-fmt
-              self.checks.${system}.wordle_yvaniak-cargo-nextest
-              self.checks.${system}.wordle_yvaniak-cargo-update
-              self.checks.${system}.wordle_yvaniak-cargo-outdated
-              self.checks.${system}.wordle_yvaniak-cargo-machete
-              self.checks.${system}.wordle_yvaniak-cargo-check
-              self.checks.${system}.wordle_yvaniak-cargo-check-release
-              self.checks.${system}.wordle_yvaniak-taplo-fmt
+              wordle_yvaniak-clippy
+              wordle_yvaniak-cargo-audit
+              wordle_yvaniak-coverage
+              wordle_yvaniak-cargo-deny
+              wordle_yvaniak-cargo-doc
+              wordle_yvaniak-cargo-doc-test
+              wordle_yvaniak-cargo-fmt
+              wordle_yvaniak-cargo-nextest
+              wordle_yvaniak-cargo-update
+              wordle_yvaniak-cargo-outdated
+              wordle_yvaniak-cargo-machete
+              wordle_yvaniak-cargo-check
+              wordle_yvaniak-cargo-check-release
+              wordle_yvaniak-taplo-fmt
             ];
             packages = [
               #voir la taille des grosses deps
