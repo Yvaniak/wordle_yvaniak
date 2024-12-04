@@ -77,8 +77,22 @@
 
           wordle_yvaniak-cargo-update = craneLib.buildPackage {
             inherit cargoArtifacts src;
-            cargoBuildCommand = "cargo update && cargo build --profile release";
+            cargoBuildCommand = "cargo update --recursive && cargo build --profile release";
             pnameSuffix = "-cargo-update";
+          };
+
+          wordle_yvaniak-cargo-outdated = craneLib.mkCargoDerivation {
+            buildInputs = [ pkgs.cargo-outdated ];
+            inherit cargoArtifacts src;
+            buildPhaseCargoCommand = "cargo outdated --exit-code 100";
+            pnameSuffix = "-cargo-outdated";
+          };
+
+          wordle_yvaniak-cargo-machete = craneLib.mkCargoDerivation {
+            buildInputs = [ pkgs.cargo-machete ];
+            inherit cargoArtifacts src;
+            buildPhaseCargoCommand = "cargo machete";
+            pnameSuffix = "-cargo-machete";
           };
 
           wordle_yvaniak-cargo-check = craneLib.buildPackage {
@@ -126,6 +140,8 @@
               self.checks.${system}.wordle_yvaniak-cargo-fmt
               self.checks.${system}.wordle_yvaniak-cargo-nextest
               self.checks.${system}.wordle_yvaniak-cargo-update
+              self.checks.${system}.wordle_yvaniak-cargo-outdated
+              self.checks.${system}.wordle_yvaniak-cargo-machete
               self.checks.${system}.wordle_yvaniak-cargo-check
               self.checks.${system}.wordle_yvaniak-cargo-check-release
               self.checks.${system}.wordle_yvaniak-taplo-fmt
@@ -135,10 +151,6 @@
               pkgs.cargo-bloat
               #gerer les deps depuis le cli
               pkgs.cargo-edit
-              #trouver les outdated
-              pkgs.cargo-outdated
-              #trouver les deps non utilisés (à besoin de nightly)
-              pkgs.cargo-udeps
               #auto compile
               pkgs.cargo-watch
               #lsp
@@ -173,6 +185,8 @@
               wordle_yvaniak-cargo-fmt
               wordle_yvaniak-cargo-nextest
               wordle_yvaniak-cargo-update
+              wordle_yvaniak-cargo-outdated
+              wordle_yvaniak-cargo-machete
               wordle_yvaniak-cargo-check
               wordle_yvaniak-cargo-check-release
               wordle_yvaniak-taplo-fmt;
