@@ -144,14 +144,12 @@
               wordle_yvaniak-cargo-deny
               wordle_yvaniak-cargo-doc
               wordle_yvaniak-cargo-doc-test
-              wordle_yvaniak-cargo-fmt
               wordle_yvaniak-cargo-nextest
               wordle_yvaniak-cargo-update
               wordle_yvaniak-cargo-outdated
               wordle_yvaniak-cargo-machete
               wordle_yvaniak-cargo-check
               wordle_yvaniak-cargo-check-release
-              wordle_yvaniak-taplo-fmt
             ];
             packages = [
               #voir la taille des grosses deps
@@ -194,8 +192,7 @@
               wordle_yvaniak-cargo-outdated
               wordle_yvaniak-cargo-machete
               wordle_yvaniak-cargo-check
-              wordle_yvaniak-cargo-check-release
-              wordle_yvaniak-taplo-fmt;
+              wordle_yvaniak-cargo-check-release;
 
             formating = treefmtEval.config.build.check self;
           };
