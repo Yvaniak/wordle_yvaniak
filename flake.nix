@@ -17,6 +17,11 @@
       url = "github:nix-community/nix-github-actions";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, advisory-db, ... }@inputs:
@@ -124,12 +129,14 @@
             cargoTarpaulinExtraArgs = "--skip-clean --out Html --output-dir $out";
             CARGO_PROFILE = "";
           };
+
+          treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
         in
         {
-          formatter = pkgs.nixpkgs-fmt;
+          formatter = treefmtEval.config.build.wrapper;
 
           devShells.default = pkgs.mkShell {
-            inputsFrom = [ 
+            inputsFrom = [
               self.packages.${pkgs.system}.default
               wordle_yvaniak-clippy
               wordle_yvaniak-cargo-audit
@@ -182,7 +189,6 @@
               wordle_yvaniak-cargo-deny
               wordle_yvaniak-cargo-doc
               wordle_yvaniak-cargo-doc-test
-              wordle_yvaniak-cargo-fmt
               wordle_yvaniak-cargo-nextest
               wordle_yvaniak-cargo-update
               wordle_yvaniak-cargo-outdated
@@ -190,6 +196,8 @@
               wordle_yvaniak-cargo-check
               wordle_yvaniak-cargo-check-release
               wordle_yvaniak-taplo-fmt;
+
+            formating = treefmtEval.config.build.check self;
           };
 
           # githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks; };
