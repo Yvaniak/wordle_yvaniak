@@ -10,5 +10,5 @@ ratatui = "0.29.0"                                  #pour le tui
 rand = "0.8.5"                                      #pour le choix random du mot
 unicode-segmentation = "1.12.0"                     #pour la comparaison entre charactères qui semblent humains avec les accent
 tui-big-text = "0.7.0"
-clap = { version = "4.5.21", features = ["cargo"] }
+clap = { version = "4.5.23", features = ["cargo"] }
 assert_cmd = "2.0.16"
