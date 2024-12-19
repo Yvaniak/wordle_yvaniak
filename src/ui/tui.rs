@@ -130,7 +130,7 @@ impl Ui for Tui {
     }
 
     //TODO:
-    fn partie(&mut self, mot: String, _guess_test: Option<String>) -> ResultPartie {
+    fn partie(&mut self, mot: String, _guess_test: String) -> ResultPartie {
         // let mut guess: String = String::new();
         //TODO: mettre guess et etat guess dans un struct guess_object avec un builder pour ça et une
         //impl pour set l'état après

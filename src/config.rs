@@ -1,10 +1,25 @@
-use clap::{crate_description, crate_name, crate_version, Command};
+use clap::{builder::Str, crate_description, crate_name, crate_version, Arg, Command};
 
 #[derive(Debug, PartialEq)]
 pub enum ConfigUi {
     Cli,
     Tui,
     Gui,
+}
+
+fn new_subcmd(name: Str) -> Command {
+    Command::new(name.clone())
+        .about(format!("launch the wordle in the {} mode", name.clone()))
+        .arg(Arg::new("quitting_test").hide(false).id("quitting_test"))
+}
+
+fn new_cmd() -> Command {
+    Command::new(crate_name!())
+        .about(crate_description!())
+        .version(crate_version!())
+        .subcommand(new_subcmd(Str::from("cli")))
+        .subcommand(new_subcmd(Str::from("tui")))
+        .subcommand(new_subcmd(Str::from("gui")))
 }
 
 #[derive(Debug, PartialEq)]
@@ -28,17 +43,19 @@ impl Config {
     }
 
     pub fn cmd() -> Result<Config, &'static str> {
-        let matches = Command::new(crate_name!())
-            .about(crate_description!())
-            .version(crate_version!())
-            .subcommand(Command::new("cli").about("launch the wordle in the cli mode"))
-            .subcommand(Command::new("tui").about("launch the wordle in the tui mode"))
-            .subcommand(Command::new("gui").about("launch the wordle in the gui mode"))
-            .get_matches();
+        let matches = new_cmd().get_matches();
 
         let lanceur = match matches.subcommand() {
             Some(("cli", _)) => ConfigUi::Cli,
-            Some(("tui", _)) => ConfigUi::Tui,
+            Some(("tui", subm)) => {
+                // subm.subcommand_matches(name)
+                // assert_eq!(sub_m.get_one::<String>("opt").map(|s| s.as_str()), Some("val"));
+                let arg = subm.get_one::<String>("quitting_test").map(|s| s.as_str());
+                if subm.args_present() && arg == Some("quitting_test") {
+                    return Err("cli testing");
+                }
+                ConfigUi::Tui
+            }
             Some(("gui", _)) => ConfigUi::Gui,
             None => ConfigUi::Cli,
             Some((&_, _)) => {
@@ -52,7 +69,20 @@ impl Config {
 
 #[cfg(test)]
 mod tests {
+    use std::any::{Any, TypeId};
+
     use super::*;
+
+    #[test]
+    fn new_subcmd_correct_name() {
+        let name = Str::from("cli");
+        assert_eq!(new_subcmd(name).get_name(), "cli");
+    }
+
+    #[test]
+    fn new_cmd_dont_panic() {
+        assert_eq!(new_cmd().type_id(), TypeId::of::<Command>());
+    }
 
     #[test]
     fn build_config_cli() {

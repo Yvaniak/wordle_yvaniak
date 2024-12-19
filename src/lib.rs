@@ -25,7 +25,9 @@ impl App {
                     self.instance.quit();
                     return Ok(());
                 }
-                ChoixMenu::Start => self.instance.partie(gen_words::pick_the_word(), None),
+                ChoixMenu::Start => self
+                    .instance
+                    .partie(gen_words::pick_the_word(), String::from("a")),
             };
 
             match partie_result {
@@ -65,7 +67,7 @@ mod tests {
 
     //TODO: app run, fin build et launch
     #[test]
-    fn app_build_with_config_sucess() {
+    fn app_build_with_config_cli_sucess() {
         let config = Config { ui: ConfigUi::Cli };
         let res = App::build(config);
         assert!(res.is_ok());
@@ -76,5 +78,11 @@ mod tests {
         let config = Config { ui: ConfigUi::Gui };
         let res = App::build(config);
         assert!(res.is_err());
+    }
+
+    #[test]
+    fn launch_with_gui_error() {
+        let config = Config { ui: ConfigUi::Gui };
+        assert!(launch(config).is_err());
     }
 }
