@@ -168,8 +168,6 @@
               wordle_yvaniak-cargo-update
               wordle_yvaniak-cargo-outdated
               wordle_yvaniak-cargo-machete;
-
-            devenv = self.packages.devenv-test;
           };
 
 
