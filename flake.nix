@@ -3,8 +3,8 @@
 
   nixConfig = {
     # Adapted From: https://github.com/divnix/digga/blob/main/examples/devos/flake.nix#L4
-    extra-substituters = "https://wordleyvaniak.cachix.org";
-    extra-trusted-public-keys = "wordleyvaniak.cachix.org-1:QIy4s3r5dMLpeOfDcu9YSdlXd14tYcYs/VM1npRMJ8M=";
+    extra-substituters = "https://wordleyvaniak.cachix.org https://devenv.cachix.org";
+    extra-trusted-public-keys = "wordleyvaniak.cachix.org-1:QIy4s3r5dMLpeOfDcu9YSdlXd14tYcYs/VM1npRMJ8M= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
     extra-experimental-features = "nix-command flakes";
   };
 
@@ -25,8 +25,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
+    devenv = {
+      url = "github:cachix/devenv";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -48,17 +48,6 @@
             inherit src;
           };
 
-          # Run clippy (and deny all warnings) on the crate source,
-          # resuing the dependency artifacts (e.g. from build scripts or
-          # proc-macros) from above.
-          #
-          # Note that this is done as a separate derivation so it
-          # does not impact building just the crate by itself.
-          wordle_yvaniak-clippy = craneLib.cargoClippy {
-            inherit cargoArtifacts src;
-            cargoClippyExtraArgs = "-- --deny warnings";
-          };
-
           wordle_yvaniak-cargo-audit = craneLib.cargoAudit {
             inherit src advisory-db;
           };
@@ -72,14 +61,6 @@
           };
 
           wordle_yvaniak-cargo-deny = craneLib.cargoDeny {
-            inherit src;
-          };
-
-          wordle_yvaniak-cargo-fmt = craneLib.cargoFmt {
-            inherit src;
-          };
-
-          wordle_yvaniak-taplo-fmt = craneLib.taploFmt {
             inherit src;
           };
 
@@ -107,18 +88,6 @@
             pnameSuffix = "-cargo-machete";
           };
 
-          wordle_yvaniak-cargo-check = craneLib.buildPackage {
-            inherit cargoArtifacts src;
-            cargoBuildCommand = "cargo check";
-            pnameSuffix = "-cargo-check";
-          };
-
-          wordle_yvaniak-cargo-check-release = craneLib.buildPackage {
-            inherit cargoArtifacts src;
-            cargoBuildCommand = "cargo check --release";
-            pnameSuffix = "-cargo-check-release";
-          };
-
           # Build the actual crate itself, reusing the dependency
           # artifacts from above.
           wordle_yvaniak = craneLib.buildPackage {
@@ -136,46 +105,45 @@
             cargoTarpaulinExtraArgs = "--skip-clean --out Html --output-dir $out";
             CARGO_PROFILE = "";
           };
-
-          treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
         in
         {
-          formatter = treefmtEval.config.build.wrapper;
+          devShells.default = inputs.devenv.lib.mkShell {
+            inherit inputs pkgs;
+            modules = [
+              ({ pkgs, ... }: {
+                languages.rust.enable = true;
 
-          devShells.default = pkgs.mkShell {
-            inputsFrom = [
-              self.packages.${pkgs.system}.default
-              wordle_yvaniak-clippy
-              wordle_yvaniak-cargo-audit
-              wordle_yvaniak-coverage
-              wordle_yvaniak-cargo-deny
-              wordle_yvaniak-cargo-doc
-              wordle_yvaniak-cargo-doc-test
-              wordle_yvaniak-cargo-nextest
-              wordle_yvaniak-cargo-update
-              wordle_yvaniak-cargo-outdated
-              wordle_yvaniak-cargo-machete
-              wordle_yvaniak-cargo-check
-              wordle_yvaniak-cargo-check-release
+                git-hooks.hooks = {
+                  rustfmt.enable = true;
+                  nixpkgs-fmt.enable = true;
+                  taplo.enable = true;
+                  markdownlint.enable = true;
+                  yamlfmt.enable = true;
+                  clippy.enable = true;
+                  cargo-check.enable = true;
+                  commitizen.enable = true;
+                };
+
+                packages = [
+                  #voir la taille des grosses deps
+                  pkgs.cargo-bloat
+                  #gerer les deps depuis le cli
+                  pkgs.cargo-edit
+                  #auto compile
+                  pkgs.cargo-watch
+                  #lsp
+                  pkgs.rust-analyzer
+                ];
+
+                env = {
+                  RUST_BACKTRACE = "1";
+                };
+
+                enterShell = ''
+                  echo "shell pour wordle"
+                '';
+              })
             ];
-            packages = [
-              #voir la taille des grosses deps
-              pkgs.cargo-bloat
-              #gerer les deps depuis le cli
-              pkgs.cargo-edit
-              #auto compile
-              pkgs.cargo-watch
-              #lsp
-              pkgs.rust-analyzer
-            ];
-
-            env = {
-              RUST_BACKTRACE = "1";
-            };
-
-            shellHook = ''
-              echo "shell pour wordle"
-            '';
           };
 
           packages = {
@@ -183,12 +151,14 @@
             default = wordle_yvaniak;
 
             wordle_yvaniak = self.packages.${pkgs.system}.default;
+
+            devenv-up = self.devShells.${system}.default.config.procfileScript;
+            devenv-test = self.devShells.${system}.default.config.test;
           };
 
           checks = {
             inherit
               wordle_yvaniak
-              wordle_yvaniak-clippy
               wordle_yvaniak-cargo-audit
               wordle_yvaniak-coverage
               wordle_yvaniak-cargo-deny
@@ -197,12 +167,12 @@
               wordle_yvaniak-cargo-nextest
               wordle_yvaniak-cargo-update
               wordle_yvaniak-cargo-outdated
-              wordle_yvaniak-cargo-machete
-              wordle_yvaniak-cargo-check
-              wordle_yvaniak-cargo-check-release;
+              wordle_yvaniak-cargo-machete;
 
-            formating = treefmtEval.config.build.check self;
+            devenv = self.packages.devenv-test;
           };
+
+
 
           # githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks; };
         }
