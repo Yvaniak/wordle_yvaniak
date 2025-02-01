@@ -1,13 +1,6 @@
 {
   description = "wordle_yvaniak";
 
-  nixConfig = {
-    # Adapted From: https://github.com/divnix/digga/blob/main/examples/devos/flake.nix#L4
-    extra-substituters = "https://wordleyvaniak.cachix.org https://devenv.cachix.org";
-    extra-trusted-public-keys = "wordleyvaniak.cachix.org-1:QIy4s3r5dMLpeOfDcu9YSdlXd14tYcYs/VM1npRMJ8M= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
-    extra-experimental-features = "nix-command flakes";
-  };
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
@@ -18,16 +11,6 @@
     advisory-db = {
       url = "github:rustsec/advisory-db";
       flake = false;
-    };
-
-    nix-github-actions = {
-      url = "github:nix-community/nix-github-actions";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    devenv = {
-      url = "github:cachix/devenv";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -113,57 +96,11 @@
         };
       in
       {
-        devShells.default = inputs.devenv.lib.mkShell {
-          inherit inputs pkgs;
-          modules = [
-            (
-              { pkgs, ... }:
-              {
-                languages.rust.enable = true;
-
-                git-hooks.hooks = {
-                  rustfmt.enable = true;
-                  taplo.enable = true;
-                  markdownlint.enable = true;
-                  yamlfmt.enable = true;
-                  clippy.enable = true;
-                  cargo-check.enable = true;
-
-                  nixfmt-rfc-style.enable = true;
-                  statix.enable = true;
-                  deadnix.enable = true;
-                  commitizen.enable = true;
-                };
-
-                packages = [
-                  #voir la taille des grosses deps
-                  pkgs.cargo-bloat
-                  #gerer les deps depuis le cli
-                  pkgs.cargo-edit
-                  #auto compile
-                  pkgs.cargo-watch
-                ];
-
-                env = {
-                  RUST_BACKTRACE = "1";
-                };
-
-                enterShell = ''
-                  echo "shell pour wordle"
-                '';
-              }
-            )
-          ];
-        };
-
         packages = {
 
           default = wordle_yvaniak;
 
           wordle_yvaniak = self.packages.${pkgs.system}.default;
-
-          devenv-up = self.devShells.${system}.default.config.procfileScript;
-          devenv-test = self.devShells.${system}.default.config.test;
         };
 
         checks = {
@@ -181,12 +118,6 @@
             ;
         };
 
-        # githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks; };
       }
-    )
-    // inputs.flake-utils.lib.eachDefaultSystemPassThrough (_: {
-      githubActions = inputs.nix-github-actions.lib.mkGithubMatrix {
-        checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks;
-      };
-    });
+    );
 }
