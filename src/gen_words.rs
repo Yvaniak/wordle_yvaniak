@@ -12,7 +12,7 @@ pub fn pick_the_word() -> String {
     //Teste que le dico n'est pas plus grand que usize
     assert!(size_of::<usize>() > dico.len());
 
-    let mot: usize = rand::thread_rng().gen_range(0..=dico.len() - 1);
+    let mot: usize = rand::rng().random_range(0..=dico.len() - 1);
 
     assert!(mot < dico.len());
     dico[mot].clone()
