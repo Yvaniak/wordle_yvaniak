@@ -1,35 +1,11 @@
-{ pkgs, ... }:
+{ inputs, ... }:
 
 {
-  languages.rust.enable = true;
-
-  git-hooks.hooks = {
-    rustfmt.enable = true;
-    taplo.enable = true;
-    markdownlint.enable = true;
-    clippy.enable = true;
-    cargo-check.enable = true;
-
-    nixfmt-rfc-style.enable = true;
-    statix.enable = true;
-    deadnix.enable = true;
-    commitizen.enable = true;
-  };
-
-  packages = [
-    #voir la taille des grosses deps
-    pkgs.cargo-bloat
-    #gerer les deps depuis le cli
-    pkgs.cargo-edit
-    #auto compile
-    pkgs.cargo-watch
-
-    pkgs.nil
+  imports = [
+    inputs.devenvs.homeManagerModules.devenvs.default
   ];
-
-  env = {
-    RUST_BACKTRACE = "1";
-  };
+  rust.enable = true;
+  nix.enable = true;
 
   enterShell = ''
     echo "shell pour wordle"
