@@ -15,5 +15,4 @@ clap = { version = "4.5.27", features = ["cargo"] }
 inquire = "0.7.5"
 
 [dev-dependencies]
-assert_cli = "0.6.3"
 assert_cmd = "2.0.16"

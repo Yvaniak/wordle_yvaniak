@@ -1,10 +1,12 @@
 #rust
 /target
 
-#nix
-.direnv
-result
+# Devenv
+.devenv*
+devenv.local.nix
 
-#devenv
-.devenv
+# direnv
+.direnv
+
+# pre-commit
 .pre-commit-config.yaml

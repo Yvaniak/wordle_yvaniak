@@ -1,26 +1,20 @@
-extern crate assert_cli;
-
 mod integration {
 
     #[test]
     fn tui() {
-        assert_cli::Assert::main_binary()
-            .with_args(&["tui", "quitting_test"])
-            .fails()
-            .and()
-            .stderr()
-            .contains("test")
-            .unwrap();
+        let mut cmd = assert_cmd::Command::cargo_bin("wordle_yvaniak").unwrap();
+        let assert = cmd.args(&["tui", "quitting_test"]).assert();
+        assert
+            .failure()
+            .stderr("Problem parsing arguments: cli testing\n");
     }
 
     #[test]
     fn gui() {
-        assert_cli::Assert::main_binary()
-            .with_args(&["gui"])
-            .fails()
-            .and()
-            .stderr()
-            .contains("Application error: tui and gui not implemented yet")
-            .unwrap();
+        let mut cmd = assert_cmd::Command::cargo_bin("wordle_yvaniak").unwrap();
+        let assert = cmd.arg("gui").assert();
+        assert
+            .failure()
+            .stderr("Application error: tui and gui not implemented yet\n");
     }
 }
