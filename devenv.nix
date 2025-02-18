@@ -9,8 +9,11 @@
   ];
   rust.enable = true;
   rust.tests.enable = true;
-  nix.enable = true;
-  nix.flake.enable = true;
+  nix = {
+    enable = true;
+    flake.enable = true;
+    tests.enable = true;
+  };
 
   enterShell = ''
     echo "shell pour wordle"

@@ -36,10 +36,10 @@
         "advisory-db": "advisory-db"
       },
       "locked": {
-        "lastModified": 1739875918,
+        "lastModified": 1739899706,
         "owner": "yvaniak",
         "repo": "devenvs",
-        "rev": "78195c37b7b6f1b2648a30272fb6914c6162f2cc",
+        "rev": "f03ae6d261ae31bdce784f33b2bf3d9a1764a92c",
         "type": "github"
       },
       "original": {
