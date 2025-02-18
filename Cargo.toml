@@ -1,6 +1,6 @@
 [package]
 name = "wordle_yvaniak"
-description = "A simple wordle in cli, and soon in tui and gui"
+description = "wordle game in rust for learning"
 version = "0.1.2"
 license = "MIT"
 edition = "2021"
