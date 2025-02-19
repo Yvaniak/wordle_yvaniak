@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nci.url = "github:yusdacra/nix-cargo-integration";
-    devenvs.url = "github:yvaniak/devenvs/flake-parts";
+    devenvs.url = "github:yvaniak/devenvs";
   };
 
   outputs =

@@ -103,7 +103,6 @@
       },
       "original": {
         "owner": "yvaniak",
-        "ref": "flake-parts",
         "repo": "devenvs",
         "type": "github"
       }
