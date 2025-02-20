@@ -14,7 +14,8 @@
       imports = [
         inputs.nci.flakeModule
         ./crates.nix
-        inputs.devenvs.inputs.devenv.flakeModule
+        inputs.devenvs.flakeModules.default
+        inputs.devenvs.devenv
       ];
       systems = [
         "x86_64-linux"
@@ -35,13 +36,14 @@
           packages.wordle_yvaniak = crateOutputs.packages.release;
           packages.default = self'.packages.wordle_yvaniak;
           devenv.shells.default = {
-            imports = [ inputs.devenvs.flakeModule ];
-            rust.enable = true;
-            rust.tests.enable = true;
-            nix = {
-              enable = true;
-              flake.enable = true;
-              tests.enable = true;
+            devenvs = {
+              rust.enable = true;
+              rust.tests.enable = true;
+              nix = {
+                enable = true;
+                flake.enable = true;
+                tests.enable = true;
+              };
             };
 
             enterShell = ''
