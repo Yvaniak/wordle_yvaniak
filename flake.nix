@@ -56,6 +56,8 @@
                 flake.enable = true;
                 tests.enable = true;
               };
+              tools.just.enable = true;
+              tools.just.pre-commit.enable = true;
             };
 
             enterShell = ''
