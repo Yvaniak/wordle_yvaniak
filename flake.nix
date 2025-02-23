@@ -4,12 +4,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nci = {
-      url = "github:yusdacra/nix-cargo-integration";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     devenvs = {
       url = "github:yvaniak/devenvs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    rust-flake = {
+      url = "github:juspay/rust-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -24,10 +24,10 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.nci.flakeModule
-        ./crates.nix
         inputs.devenvs.flakeModules.default
         inputs.devenvs.devenv
+        inputs.rust-flake.flakeModules.default
+        inputs.rust-flake.flakeModules.nixpkgs
       ];
       systems = [
         "x86_64-linux"
@@ -37,16 +37,11 @@
       ];
       perSystem =
         {
-          self',
           config,
           ...
         }:
-        let
-          crateOutputs = config.nci.outputs."wordle_yvaniak";
-        in
         {
-          packages.wordle_yvaniak = crateOutputs.packages.release;
-          packages.default = self'.packages.wordle_yvaniak;
+          packages.default = config.packages.wordle_yvaniak;
           devenv.shells.default = {
             devenvs = {
               rust.enable = true;
