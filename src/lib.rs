@@ -53,10 +53,7 @@ impl App {
 }
 
 pub fn launch(config: config::Config) -> Result<(), Box<dyn Error>> {
-    let mut app = match App::build(config) {
-        Err(e) => return Err(e),
-        Ok(app) => app,
-    };
+    let mut app = App::build(config)?;
 
     app.run()
 }

@@ -3,7 +3,7 @@ mod integration {
     #[test]
     fn tui() {
         let mut cmd = assert_cmd::Command::cargo_bin("wordle_yvaniak").unwrap();
-        let assert = cmd.args(&["tui", "quitting_test"]).assert();
+        let assert = cmd.args(["tui", "quitting_test"]).assert();
         assert
             .failure()
             .stderr("Problem parsing arguments: cli testing\n");
