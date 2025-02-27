@@ -45,14 +45,22 @@
           devenv.shells.default = {
             devenvs = {
               rust.enable = true;
-              rust.tests.enable = true;
               nix = {
                 enable = true;
                 flake.enable = true;
-                tests.enable = true;
+                check = {
+                  enable = true;
+                  package = config.packages.default;
+                };
               };
-              tools.just.enable = true;
-              tools.just.pre-commit.enable = true;
+              tools = {
+                just.enable = true;
+                just.pre-commit.enable = true;
+              };
+              docs.check = {
+                enable = true;
+                package = config.packages.wordle_yvaniak-doc;
+              };
             };
 
             enterShell = ''

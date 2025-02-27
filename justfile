@@ -12,7 +12,6 @@ run: build
 tests: build
   cargo nextest run
   cargo test --doc
-  nix build
 
 pre-commit-all:
   pre-commit run --all-files
@@ -21,5 +20,8 @@ pre-commit-all:
 docs:
   cargo doc
 
-all: build tests docs pre-commit-all
+build-release:
+  cargo build --release
+
+all: build tests docs pre-commit-all build-release
 
