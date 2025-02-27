@@ -63,6 +63,9 @@
               };
             };
 
+            cachix.enable = true;
+            cachix.pull = "wordleyvaniak";
+
             enterShell = ''
               echo "shell pour wordle"
             '';
