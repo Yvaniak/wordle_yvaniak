@@ -4,8 +4,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    devenvs = {
-      url = "github:yvaniak/devenvs";
+    mydevenvs = {
+      url = "github:yvaniak/mydevenvs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-flake = {
@@ -24,8 +24,8 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.devenvs.flakeModules.default
-        inputs.devenvs.devenv
+        inputs.mydevenvs.flakeModules.default
+        inputs.mydevenvs.devenv
         inputs.rust-flake.flakeModules.default
         inputs.rust-flake.flakeModules.nixpkgs
       ];
@@ -43,7 +43,7 @@
         {
           packages.default = config.packages.wordle_yvaniak;
           devenv.shells.default = {
-            devenvs = {
+            mydevenvs = {
               rust.enable = true;
               nix = {
                 enable = true;
