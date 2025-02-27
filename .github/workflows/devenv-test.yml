@@ -1,4 +1,4 @@
-name: "Test devenv"
+name: "Tests"
 on:
   pull_request:
   push:
@@ -12,4 +12,4 @@ jobs:
         with:
           name: devenv
       - name: Build the devenv shell and run any pre-commit hooks
-        run: nix develop --no-pure-eval --command devenv "test"
+        run: nix develop --no-pure-eval --command all
