@@ -8,10 +8,7 @@
       url = "github:yvaniak/mydevenvs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    rust-flake = {
-      url = "github:juspay/rust-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    crane.url = "github:ipetkov/crane";
   };
 
   nixConfig = {
@@ -26,8 +23,6 @@
       imports = [
         inputs.mydevenvs.flakeModules.default
         inputs.mydevenvs.devenv
-        inputs.rust-flake.flakeModules.default
-        inputs.rust-flake.flakeModules.nixpkgs
       ];
       systems = [
         "x86_64-linux"
@@ -38,10 +33,15 @@
       perSystem =
         {
           config,
+          pkgs,
           ...
         }:
         {
-          packages.default = config.packages.wordle_yvaniak;
+          packages = import ./nix/packages.nix {
+            inherit pkgs;
+            inherit (inputs) crane;
+          };
+
           devenv.shells.default = {
             mydevenvs = {
               rust.enable = true;
@@ -54,12 +54,15 @@
                 };
               };
               tools = {
-                just.enable = true;
-                just.pre-commit.enable = true;
+                just = {
+                  enable = true;
+                  pre-commit.enable = true;
+                  check.enable = true;
+                };
               };
               docs.check = {
                 enable = true;
-                package = config.packages.wordle_yvaniak-doc;
+                package = config.packages.docs;
               };
             };
 

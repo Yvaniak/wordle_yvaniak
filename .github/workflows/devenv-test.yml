@@ -12,4 +12,4 @@ jobs:
         with:
           name: devenv
       - name: Build the devenv shell and run any pre-commit hooks
-        run: nix develop --no-pure-eval --command all
+        run: nix develop --no-pure-eval -c bash -c "just-generate && just all"
