@@ -25,8 +25,11 @@ fn get_guess(_guess: &str, taille: usize) -> String {
     match res {
         Ok(guess) => guess,
         Err(e) => {
-            eprint!("the error {} happened, try again", e);
-            String::from("error, restart")
+            match e.kind() {
+                std::io::ErrorKind::Interrupted => {}
+                _ => eprint!("error {} happened, try again : {}", e, e.kind(),),
+            }
+            String::from("")
         }
     }
 }
@@ -71,9 +74,13 @@ impl Ui for Cli {
                         }
                         return ChoixMenu::Quit;
                     }
-                    _ => println!("There was an error, please try again"),
+                    _ => eprintln!("error happened during the choice in the menu"),
                 },
-                Err(_) => println!("There was an error, please try again"),
+                Err(e) => {
+                    if e.kind() != std::io::ErrorKind::Interrupted {
+                        eprintln!("There was an error, please try again")
+                    }
+                }
             }
         }
     }
@@ -122,6 +129,10 @@ impl Ui for Cli {
             }
 
             let guess = String::from(guess);
+
+            if guess.is_empty() {
+                continue;
+            }
 
             match traitement_wordle(&mot, guess) {
                 Ok(ResultWordle::Win) => {
