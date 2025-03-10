@@ -1,8 +1,6 @@
-//TODO: menuing : go to menu, exit and then delete message
 //TODO: validate graphically at enter
 use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
-// use std::io;
 pub struct Cli {}
 
 fn get_guess(_guess: &str, taille: usize) -> String {
@@ -14,9 +12,9 @@ fn get_guess(_guess: &str, taille: usize) -> String {
     .validate_interactively(move |input: &String| {
         if input.is_empty() {
             Err("Please enter an answer.")
-        } else if input.chars().count() < taille {
+        } else if input.chars().count() < taille && input != "e" && input != "m" {
             Err("Too short")
-        } else if input.chars().count() > taille {
+        } else if input.chars().count() > taille && input != "e" && input != "m" {
             Err("Too long")
         } else {
             Ok(())
@@ -64,7 +62,7 @@ impl Ui for Cli {
                 Ok(choice) => match choice {
                     "start" => return ChoixMenu::Start,
                     "quit" => {
-                        match cliclack::outro("Quitting") {
+                        match cliclack::outro("Exiting") {
                             Ok(_) => {}
                             Err(e) => eprintln!(
                                 "An error happened during the print of the outro message : {}",
@@ -78,28 +76,6 @@ impl Ui for Cli {
                 Err(_) => println!("There was an error, please try again"),
             }
         }
-        // loop {
-        //     match std::io::stdin().read_line(&mut choix) {
-        //         Ok(_str) if choix.trim() == "s" || choix.trim() == "start" => {
-        //             return ChoixMenu::Start;
-        //         }
-        //         Ok(_str)
-        //             if choix.trim() == "quit"
-        //                 || choix.trim() == "q"
-        //                 || choix.trim() == "exit"
-        //                 || choix.trim() == "e" =>
-        //         {
-        //             println!("exitting");
-        //             return ChoixMenu::Quit;
-        //         }
-        //         Ok(_str) => {
-        //             println!("didn't understood that, can you repeat ?");
-        //             choix = String::new();
-        //             continue;
-        //         }
-        //         Err(_e) => continue,
-        //     }
-        // }
     }
 
     fn partie(&mut self, mot: String, guess: String) -> ResultPartie {
@@ -108,20 +84,40 @@ impl Ui for Cli {
             mot.chars().count()
         ));
 
-        println!("You can go to the menu by inputting : menu and quit by inputting : quit");
+        match cliclack::log::info(
+            "You can go to the menu by inputting : m and exit by inputting : e",
+        ) {
+            Ok(_) => {}
+            Err(e) => eprintln!(
+                "An error happened during the print of the info of menu and quit : {}",
+                e
+            ),
+        }
 
         loop {
             let guess = get_guess(&guess, mot.chars().count());
 
             let guess = guess.trim();
 
-            if guess == "quit" || guess == "exit" {
-                println!("\n{}ting", guess);
+            if guess == "e" {
+                match cliclack::outro("Exiting") {
+                    Ok(_) => {}
+                    Err(e) => eprintln!(
+                        "An error happened during the print of the outro message : {}",
+                        e
+                    ),
+                }
                 return ResultPartie::Quit;
             }
 
-            if guess == "menu" {
-                println!("\ngoing to menu");
+            if guess == "m" {
+                match cliclack::log::info("\nGoing to menu") {
+                    Ok(_) => {}
+                    Err(e) => eprintln!(
+                        "An error happened during the print of the going to menu message : {}",
+                        e
+                    ),
+                }
                 return ResultPartie::Stay;
             }
 
