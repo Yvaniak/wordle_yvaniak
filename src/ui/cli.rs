@@ -1,42 +1,35 @@
-use inquire::{InquireError, Select, Text};
-
+//TODO: menuing : go to menu, exit and then delete message
+//TODO: validate graphically at enter
 use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
 // use std::io;
 pub struct Cli {}
 
-fn get_guess(guess: &str, taille: usize) -> String {
-    loop {
-        if !guess.is_empty() {
-            let guess_inquire = Text::new(
-                format!("What is your guess for the word of {} letters ?", taille).as_str(),
-            )
-            .with_validator(move |g: &str| {
-                if g.chars().count() != taille {
-                    Ok(inquire::validator::Validation::Invalid(
-                        format!(
-                            "You entered a word that was of size {} but the word is of size {}",
-                            g.chars().count(),
-                            taille
-                        )
-                        .into(),
-                    ))
-                } else {
-                    Ok(inquire::validator::Validation::Valid)
-                }
-            })
-            .prompt();
-            match guess_inquire {
-                Ok(guess) => return guess,
-                Err(_) => {
-                    println!(
-                        "An error happened during the processing of your guess, please try again"
-                    );
-                    continue;
-                }
-            }
-        };
-        return guess.to_owned();
+fn get_guess(_guess: &str, taille: usize) -> String {
+    let res = cliclack::input(format!(
+        "What is your guess for the word of {} letters",
+        taille
+    ))
+    .placeholder(&"*".repeat(taille))
+    .validate_interactively(move |input: &String| {
+        if input.is_empty() {
+            Err("Please enter an answer.")
+        } else if input.chars().count() < taille {
+            Err("Too short")
+        } else if input.chars().count() > taille {
+            Err("Too long")
+        } else {
+            Ok(())
+        }
+    })
+    .interact();
+
+    match res {
+        Ok(guess) => guess,
+        Err(e) => {
+            eprint!("the error {} happened, try again", e);
+            String::from("error, restart")
+        }
     }
 }
 
@@ -48,21 +41,36 @@ impl Ui for Cli {
     fn quit(&mut self) {}
 
     fn welcoming(&self) {
-        println!("Welcome in the menu of this wordle game !");
+        match cliclack::intro("Welcome in the menu of this wordle game !") {
+            Ok(_) => {}
+            Err(e) => eprintln!(
+                "An error happened during the print of the intro message : {}",
+                e
+            ),
+        }
     }
 
     fn menu(&mut self) -> ChoixMenu {
         let _choix: String = String::new();
 
         loop {
-            let options: Vec<&str> = vec!["Start a game", "Quit the game"];
-            let ans: Result<&str, InquireError> =
-                Select::new("What do you want to do ?", options).prompt();
+            let ans = cliclack::select("What do you want to do ?")
+                .initial_value("Start a game")
+                .item("start", "Start a game", "")
+                .item("quit", "Quit the game", "")
+                .interact();
+
             match ans {
                 Ok(choice) => match choice {
-                    "Start a game" => return ChoixMenu::Start,
-                    "Quit the game" => {
-                        println!("Quitting");
+                    "start" => return ChoixMenu::Start,
+                    "quit" => {
+                        match cliclack::outro("Quitting") {
+                            Ok(_) => {}
+                            Err(e) => eprintln!(
+                                "An error happened during the print of the outro message : {}",
+                                e
+                            ),
+                        }
                         return ChoixMenu::Quit;
                     }
                     _ => println!("There was an error, please try again"),
@@ -95,33 +103,15 @@ impl Ui for Cli {
     }
 
     fn partie(&mut self, mot: String, guess: String) -> ResultPartie {
-        println!(
+        let _ = cliclack::log::info(format!(
             "The wordle game begin ! The word has {} letters",
             mot.chars().count()
-        );
+        ));
 
         println!("You can go to the menu by inputting : menu and quit by inputting : quit");
 
         loop {
-            println!("\nPlease input your guess.");
-
             let guess = get_guess(&guess, mot.chars().count());
-
-            // let mut guess: String = String::new();
-
-            //allow the test of partie
-            // match &guess_test {
-            //     Some(value_test) => guess = String::from(value_test),
-            //     None => {
-            //         match io::stdin().read_line(&mut guess) {
-            //             Err(_) => {
-            //                 println!("\nerreur lors de la lecture");
-            //                 continue;
-            //             }
-            //             Ok(str) => str,
-            //         };
-            //     }
-            // }
 
             let guess = guess.trim();
 
@@ -139,7 +129,13 @@ impl Ui for Cli {
 
             match traitement_wordle(&mot, guess) {
                 Ok(ResultWordle::Win) => {
-                    println!("You win !");
+                    match cliclack::log::success("You win !") {
+                        Ok(_) => {}
+                        Err(e) => eprintln!(
+                            "Error happenned during the print of the win message : {}",
+                            e
+                        ),
+                    }
                     return ResultPartie::Stay;
                 }
                 Ok(ResultWordle::UnmatchedLens(len_mot, len_guess)) => {

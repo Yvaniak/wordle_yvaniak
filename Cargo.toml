@@ -11,8 +11,7 @@ rand = "0.9.0"                                      #pour le choix random du mot
 unicode-segmentation = "1.12.0"                     #pour la comparaison entre charactères qui semblent humains avec les accent
 tui-big-text = "0.7.0"
 clap = { version = "4.5.27", features = ["cargo"] }
-#TODO: change to cliclack
-inquire = "0.7.5"
+cliclack = "0.3.5"
 
 [dev-dependencies]
 assert_cmd = "2.0.16"
