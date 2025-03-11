@@ -1,44 +1,7 @@
-use inquire::{InquireError, Select, Text};
-
 use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
-// use std::io;
+use colored::Colorize;
 pub struct Cli {}
-
-fn get_guess(guess: &str, taille: usize) -> String {
-    loop {
-        if !guess.is_empty() {
-            let guess_inquire = Text::new(
-                format!("What is your guess for the word of {} letters ?", taille).as_str(),
-            )
-            .with_validator(move |g: &str| {
-                if g.chars().count() != taille {
-                    Ok(inquire::validator::Validation::Invalid(
-                        format!(
-                            "You entered a word that was of size {} but the word is of size {}",
-                            g.chars().count(),
-                            taille
-                        )
-                        .into(),
-                    ))
-                } else {
-                    Ok(inquire::validator::Validation::Valid)
-                }
-            })
-            .prompt();
-            match guess_inquire {
-                Ok(guess) => return guess,
-                Err(_) => {
-                    println!(
-                        "An error happened during the processing of your guess, please try again"
-                    );
-                    continue;
-                }
-            }
-        };
-        return guess.to_owned();
-    }
-}
 
 impl Ui for Cli {
     fn new() -> Self {
@@ -48,90 +11,164 @@ impl Ui for Cli {
     fn quit(&mut self) {}
 
     fn welcoming(&self) {
-        println!("Welcome in the menu of this wordle game !");
+        match cliclack::intro("Welcome in the menu of this wordle game !") {
+            Ok(_) => {}
+            Err(e) => eprintln!(
+                "An error happened during the print of the intro message : {}",
+                e
+            ),
+        }
     }
 
     fn menu(&mut self) -> ChoixMenu {
         let _choix: String = String::new();
 
         loop {
-            let options: Vec<&str> = vec!["Start a game", "Quit the game"];
-            let ans: Result<&str, InquireError> =
-                Select::new("What do you want to do ?", options).prompt();
+            let ans = cliclack::select("What do you want to do ?")
+                .initial_value("Start a game")
+                .item("start", "Start a game", "")
+                .item("quit", "Quit the game", "")
+                .interact();
+
             match ans {
                 Ok(choice) => match choice {
-                    "Start a game" => return ChoixMenu::Start,
-                    "Quit the game" => {
-                        println!("Quitting");
+                    "start" => return ChoixMenu::Start,
+                    "quit" => {
+                        match cliclack::outro("Exiting") {
+                            Ok(_) => {}
+                            Err(e) => eprintln!(
+                                "An error happened during the print of the outro message : {}",
+                                e
+                            ),
+                        }
                         return ChoixMenu::Quit;
                     }
-                    _ => println!("There was an error, please try again"),
+                    _ => eprintln!("error happened during the choice in the menu"),
                 },
-                Err(_) => println!("There was an error, please try again"),
+                Err(e) => {
+                    if e.kind() != std::io::ErrorKind::Interrupted {
+                        eprintln!("There was an error, please try again")
+                    }
+                }
             }
         }
-        // loop {
-        //     match std::io::stdin().read_line(&mut choix) {
-        //         Ok(_str) if choix.trim() == "s" || choix.trim() == "start" => {
-        //             return ChoixMenu::Start;
-        //         }
-        //         Ok(_str)
-        //             if choix.trim() == "quit"
-        //                 || choix.trim() == "q"
-        //                 || choix.trim() == "exit"
-        //                 || choix.trim() == "e" =>
-        //         {
-        //             println!("exitting");
-        //             return ChoixMenu::Quit;
-        //         }
-        //         Ok(_str) => {
-        //             println!("didn't understood that, can you repeat ?");
-        //             choix = String::new();
-        //             continue;
-        //         }
-        //         Err(_e) => continue,
-        //     }
-        // }
     }
 
-    fn partie(&mut self, mot: String, guess: String) -> ResultPartie {
-        println!(
+    fn partie(&mut self, mot: String, _guess: String) -> ResultPartie {
+        let _ = cliclack::log::info(format!(
             "The wordle game begin ! The word has {} letters",
             mot.chars().count()
-        );
+        ));
 
-        println!("You can go to the menu by inputting : menu and quit by inputting : quit");
+        match cliclack::log::info(
+            "You can go to the menu by inputting : m and exit by inputting : e",
+        ) {
+            Ok(_) => {}
+            Err(e) => eprintln!(
+                "An error happened during the print of the info of menu and quit : {}",
+                e
+            ),
+        }
 
         loop {
-            println!("\nPlease input your guess.");
+            let taille = mot.chars().count();
+            let mot_cloned = mot.clone();
 
-            let guess = get_guess(&guess, mot.chars().count());
+            let res = cliclack::input(format!(
+                "What is your guess for the word of {} letters",
+                taille
+            ))
+            .placeholder(&"*".repeat(taille))
+            .validate_interactively(move |input: &String| {
+                if input.is_empty() {
+                    Err("Please enter an answer.")
+                } else if input.chars().count() < taille && input != "e" && input != "m" {
+                    Err("Too short")
+                } else if input.chars().count() > taille && input != "e" && input != "m" {
+                    Err("Too long")
+                } else {
+                    Ok(())
+                }
+            })
+            .validate(move |input: &String| {
+                match traitement_wordle(&mot_cloned, input.to_string()) {
+                    Ok(ResultWordle::Placement(placement)) => {
+                        let mut message = String::new();
+                        for i in placement.result.into_iter() {
+                            match i {
+                                ResultPlacement::Misplaced(l) => {
+                                    message.push_str(
+                                        format!(
+                                            "{}",
+                                            l.to_string().as_str().truecolor(255, 165, 0)
+                                        )
+                                        .as_str(),
+                                    );
+                                }
+                                ResultPlacement::Bad(l) => {
+                                    message.push_str(
+                                        format!("{}", Colorize::red(l.to_string().as_str()))
+                                            .as_str(),
+                                    );
+                                }
+                                ResultPlacement::Good(l) => {
+                                    message.push_str(
+                                        format!("{}", Colorize::green(l.to_string().as_str()))
+                                            .as_str(),
+                                    );
+                                }
+                            }
+                        }
+                        Err(message)
+                    }
+                    Ok(ResultWordle::Win) => Ok(()),
+                    Ok(ResultWordle::UnmatchedLens(_len_mot, len_guess)) => {
+                        if len_guess == 1 {
+                            return Ok(());
+                        }
+                        Err(String::from(""))
+                    }
+                    Err(_) => Err(String::from("")),
+                }
+            })
+            .interact();
 
-            // let mut guess: String = String::new();
+            let guess = match res {
+                Ok(guess) => guess,
+                Err(e) => {
+                    match e.kind() {
+                        std::io::ErrorKind::Interrupted => {}
+                        _ => eprint!("error {} happened, try again : {}", e, e.kind(),),
+                    }
+                    String::from("")
+                }
+            };
 
-            //allow the test of partie
-            // match &guess_test {
-            //     Some(value_test) => guess = String::from(value_test),
-            //     None => {
-            //         match io::stdin().read_line(&mut guess) {
-            //             Err(_) => {
-            //                 println!("\nerreur lors de la lecture");
-            //                 continue;
-            //             }
-            //             Ok(str) => str,
-            //         };
-            //     }
-            // }
+            if guess.is_empty() {
+                continue;
+            }
 
             let guess = guess.trim();
 
-            if guess == "quit" || guess == "exit" {
-                println!("\n{}ting", guess);
+            if guess == "e" {
+                match cliclack::outro("Exiting") {
+                    Ok(_) => {}
+                    Err(e) => eprintln!(
+                        "An error happened during the print of the outro message : {}",
+                        e
+                    ),
+                }
                 return ResultPartie::Quit;
             }
 
-            if guess == "menu" {
-                println!("\ngoing to menu");
+            if guess == "m" {
+                match cliclack::log::info("\nGoing to menu") {
+                    Ok(_) => {}
+                    Err(e) => eprintln!(
+                        "An error happened during the print of the going to menu message : {}",
+                        e
+                    ),
+                }
                 return ResultPartie::Stay;
             }
 
@@ -139,7 +176,13 @@ impl Ui for Cli {
 
             match traitement_wordle(&mot, guess) {
                 Ok(ResultWordle::Win) => {
-                    println!("You win !");
+                    match cliclack::log::success("You win !") {
+                        Ok(_) => {}
+                        Err(e) => eprintln!(
+                            "Error happenned during the print of the win message : {}",
+                            e
+                        ),
+                    }
                     return ResultPartie::Stay;
                 }
                 Ok(ResultWordle::UnmatchedLens(len_mot, len_guess)) => {

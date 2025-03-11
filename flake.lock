@@ -19,15 +19,15 @@
     "cachix": {
       "inputs": {
         "devenv": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ],
         "flake-compat": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ],
         "git-hooks": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ],
         "nixpkgs": "nixpkgs"
@@ -49,11 +49,11 @@
     },
     "crane": {
       "locked": {
-        "lastModified": 1736566337,
-        "narHash": "sha256-SC0eDcZPqISVt6R0UfGPyQLrI0+BppjjtQ3wcSlk0oI=",
+        "lastModified": 1741481578,
+        "narHash": "sha256-JBTSyJFQdO3V8cgcL08VaBUByEU6P5kXbTJN6R0PFQo=",
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "9172acc1ee6c7e1cbafc3044ff850c568c75a5a3",
+        "rev": "bb1c9567c43e4434f54e9481eb4b8e8e0d50f0b5",
         "type": "github"
       },
       "original": {
@@ -69,45 +69,21 @@
         "git-hooks": "git-hooks",
         "nix": "nix",
         "nixpkgs": [
-          "devenvs",
+          "mydevenvs",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1740575096,
-        "narHash": "sha256-dXitHIgoq6aozAedY/waD8bcg7pNv2Mht4UyHvYii94=",
+        "lastModified": 1740678151,
+        "narHash": "sha256-q0tKL+Yny0wkLCHRBHQ97YhjorNLnbnyjc+FnQZyKkM=",
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "4000b0153c6f54a57368c0b066aaa0024450618c",
+        "rev": "af151da5e3d7391fe778050da00d8e7cefa2d087",
         "type": "github"
       },
       "original": {
         "owner": "cachix",
         "repo": "devenv",
-        "type": "github"
-      }
-    },
-    "devenvs": {
-      "inputs": {
-        "advisory-db": "advisory-db",
-        "devenv": "devenv",
-        "flake-parts": "flake-parts_2",
-        "mkdocs-flake": "mkdocs-flake",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1740651643,
-        "narHash": "sha256-t4DJm2s5yrEMKVzwWNuy+egK//3gvpBIkt4PyyXjy6U=",
-        "owner": "yvaniak",
-        "repo": "devenvs",
-        "rev": "24f3080bddd2708dd2b55bb6ff0545a0e0ad5b51",
-        "type": "github"
-      },
-      "original": {
-        "owner": "yvaniak",
-        "repo": "devenvs",
         "type": "github"
       }
     },
@@ -129,8 +105,26 @@
     },
     "flake-parts": {
       "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1738453229,
+        "narHash": "sha256-7H9XgNiGLKN1G1CgRh0vUL4AheZSYzPm+zmZ7vxbJdo=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "32ea77a06711b758da0ad9bd6a844c5740a87abd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_2": {
+      "inputs": {
         "nixpkgs-lib": [
-          "devenvs",
+          "mydevenvs",
           "devenv",
           "nix",
           "nixpkgs"
@@ -150,31 +144,9 @@
         "type": "github"
       }
     },
-    "flake-parts_2": {
-      "inputs": {
-        "nixpkgs-lib": "nixpkgs-lib"
-      },
-      "locked": {
-        "lastModified": 1738453229,
-        "narHash": "sha256-7H9XgNiGLKN1G1CgRh0vUL4AheZSYzPm+zmZ7vxbJdo=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "32ea77a06711b758da0ad9bd6a844c5740a87abd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
     "flake-parts_3": {
       "inputs": {
-        "nixpkgs-lib": [
-          "devenvs",
-          "mkdocs-flake",
-          "nixpkgs"
-        ]
+        "nixpkgs-lib": "nixpkgs-lib_2"
       },
       "locked": {
         "lastModified": 1738453229,
@@ -192,7 +164,11 @@
     },
     "flake-parts_4": {
       "inputs": {
-        "nixpkgs-lib": "nixpkgs-lib_2"
+        "nixpkgs-lib": [
+          "mydevenvs",
+          "mkdocs-flake",
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1738453229,
@@ -229,12 +205,12 @@
     "git-hooks": {
       "inputs": {
         "flake-compat": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ],
         "gitignore": "gitignore",
         "nixpkgs": [
-          "devenvs",
+          "mydevenvs",
           "devenv",
           "nixpkgs"
         ]
@@ -256,7 +232,7 @@
     "gitignore": {
       "inputs": {
         "nixpkgs": [
-          "devenvs",
+          "mydevenvs",
           "devenv",
           "git-hooks",
           "nixpkgs"
@@ -294,9 +270,9 @@
     },
     "mkdocs-flake": {
       "inputs": {
-        "flake-parts": "flake-parts_3",
+        "flake-parts": "flake-parts_4",
         "nixpkgs": [
-          "devenvs",
+          "mydevenvs",
           "nixpkgs"
         ],
         "poetry2nix": "poetry2nix"
@@ -315,25 +291,49 @@
         "type": "github"
       }
     },
+    "mydevenvs": {
+      "inputs": {
+        "advisory-db": "advisory-db",
+        "devenv": "devenv",
+        "flake-parts": "flake-parts_3",
+        "mkdocs-flake": "mkdocs-flake",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1740690019,
+        "narHash": "sha256-pQxmjOG05yHBE0/K5pPkY5RMzk9GU3SYe1eNWxMszKY=",
+        "owner": "yvaniak",
+        "repo": "mydevenvs",
+        "rev": "6ffd2eedcbcdac05018ec8c30e6f906697a941d4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "yvaniak",
+        "repo": "mydevenvs",
+        "type": "github"
+      }
+    },
     "nix": {
       "inputs": {
         "flake-compat": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ],
-        "flake-parts": "flake-parts",
+        "flake-parts": "flake-parts_2",
         "libgit2": "libgit2",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-23-11": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ],
         "nixpkgs-regression": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ],
         "pre-commit-hooks": [
-          "devenvs",
+          "mydevenvs",
           "devenv"
         ]
       },
@@ -355,7 +355,7 @@
     "nix-github-actions": {
       "inputs": {
         "nixpkgs": [
-          "devenvs",
+          "mydevenvs",
           "mkdocs-flake",
           "poetry2nix",
           "nixpkgs"
@@ -433,11 +433,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1740367490,
-        "narHash": "sha256-WGaHVAjcrv+Cun7zPlI41SerRtfknGQap281+AakSAw=",
+        "lastModified": 1740560979,
+        "narHash": "sha256-Vr3Qi346M+8CjedtbyUevIGDZW8LcA1fTG0ugPY/Hic=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0196c0175e9191c474c26ab5548db27ef5d34b05",
+        "rev": "5135c59491985879812717f4c9fea69604e7f26f",
         "type": "github"
       },
       "original": {
@@ -452,7 +452,7 @@
         "flake-utils": "flake-utils",
         "nix-github-actions": "nix-github-actions",
         "nixpkgs": [
-          "devenvs",
+          "mydevenvs",
           "mkdocs-flake",
           "nixpkgs"
         ],
@@ -475,53 +475,10 @@
     },
     "root": {
       "inputs": {
-        "devenvs": "devenvs",
-        "flake-parts": "flake-parts_4",
-        "nixpkgs": "nixpkgs_3",
-        "rust-flake": "rust-flake"
-      }
-    },
-    "rust-flake": {
-      "inputs": {
         "crane": "crane",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "rust-overlay": "rust-overlay"
-      },
-      "locked": {
-        "lastModified": 1736806612,
-        "narHash": "sha256-WioA+Vk7suDK+Ek77rDlbuxV6WqwFt30JsKHrmDCSiU=",
-        "owner": "juspay",
-        "repo": "rust-flake",
-        "rev": "b5f39885e2fcf137bfaf75decc077f9cca2bd984",
-        "type": "github"
-      },
-      "original": {
-        "owner": "juspay",
-        "repo": "rust-flake",
-        "type": "github"
-      }
-    },
-    "rust-overlay": {
-      "inputs": {
-        "nixpkgs": [
-          "rust-flake",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1736700680,
-        "narHash": "sha256-9gmWIb8xsycWHEYpd2SiVIAZnUULX6Y+IMMZBcDUCQU=",
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "rev": "5d1865c0da63b4c949f383d982b6b43519946e8f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "type": "github"
+        "flake-parts": "flake-parts",
+        "mydevenvs": "mydevenvs",
+        "nixpkgs": "nixpkgs_3"
       }
     },
     "systems": {
@@ -557,7 +514,7 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
-          "devenvs",
+          "mydevenvs",
           "mkdocs-flake",
           "poetry2nix",
           "nixpkgs"

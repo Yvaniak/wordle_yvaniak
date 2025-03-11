@@ -4,14 +4,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    devenvs = {
-      url = "github:yvaniak/devenvs";
+    mydevenvs = {
+      url = "github:yvaniak/mydevenvs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    rust-flake = {
-      url = "github:juspay/rust-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    crane.url = "github:ipetkov/crane";
   };
 
   nixConfig = {
@@ -24,10 +21,8 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.devenvs.flakeModules.default
-        inputs.devenvs.devenv
-        inputs.rust-flake.flakeModules.default
-        inputs.rust-flake.flakeModules.nixpkgs
+        inputs.mydevenvs.flakeModules.default
+        inputs.mydevenvs.devenv
       ];
       systems = [
         "x86_64-linux"
@@ -38,12 +33,17 @@
       perSystem =
         {
           config,
+          pkgs,
           ...
         }:
         {
-          packages.default = config.packages.wordle_yvaniak;
+          packages = import ./nix/packages.nix {
+            inherit pkgs;
+            inherit (inputs) crane;
+          };
+
           devenv.shells.default = {
-            devenvs = {
+            mydevenvs = {
               rust.enable = true;
               nix = {
                 enable = true;
@@ -54,12 +54,15 @@
                 };
               };
               tools = {
-                just.enable = true;
-                just.pre-commit.enable = true;
+                just = {
+                  enable = true;
+                  pre-commit.enable = true;
+                  check.enable = true;
+                };
               };
               docs.check = {
                 enable = true;
-                package = config.packages.wordle_yvaniak-doc;
+                package = config.packages.docs;
               };
             };
 
