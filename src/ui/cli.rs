@@ -1,38 +1,7 @@
-//TODO: validate graphically at enter
 use super::{traitement_wordle, ResultPartie, ResultPlacement, ResultWordle};
 use super::{ChoixMenu, Ui};
+use colored::Colorize;
 pub struct Cli {}
-
-fn get_guess(_guess: &str, taille: usize) -> String {
-    let res = cliclack::input(format!(
-        "What is your guess for the word of {} letters",
-        taille
-    ))
-    .placeholder(&"*".repeat(taille))
-    .validate_interactively(move |input: &String| {
-        if input.is_empty() {
-            Err("Please enter an answer.")
-        } else if input.chars().count() < taille && input != "e" && input != "m" {
-            Err("Too short")
-        } else if input.chars().count() > taille && input != "e" && input != "m" {
-            Err("Too long")
-        } else {
-            Ok(())
-        }
-    })
-    .interact();
-
-    match res {
-        Ok(guess) => guess,
-        Err(e) => {
-            match e.kind() {
-                std::io::ErrorKind::Interrupted => {}
-                _ => eprint!("error {} happened, try again : {}", e, e.kind(),),
-            }
-            String::from("")
-        }
-    }
-}
 
 impl Ui for Cli {
     fn new() -> Self {
@@ -85,7 +54,7 @@ impl Ui for Cli {
         }
     }
 
-    fn partie(&mut self, mot: String, guess: String) -> ResultPartie {
+    fn partie(&mut self, mot: String, _guess: String) -> ResultPartie {
         let _ = cliclack::log::info(format!(
             "The wordle game begin ! The word has {} letters",
             mot.chars().count()
@@ -102,7 +71,82 @@ impl Ui for Cli {
         }
 
         loop {
-            let guess = get_guess(&guess, mot.chars().count());
+            let taille = mot.chars().count();
+            let mot_cloned = mot.clone();
+
+            let res = cliclack::input(format!(
+                "What is your guess for the word of {} letters",
+                taille
+            ))
+            .placeholder(&"*".repeat(taille))
+            .validate_interactively(move |input: &String| {
+                if input.is_empty() {
+                    Err("Please enter an answer.")
+                } else if input.chars().count() < taille && input != "e" && input != "m" {
+                    Err("Too short")
+                } else if input.chars().count() > taille && input != "e" && input != "m" {
+                    Err("Too long")
+                } else {
+                    Ok(())
+                }
+            })
+            .validate(move |input: &String| {
+                match traitement_wordle(&mot_cloned, input.to_string()) {
+                    Ok(ResultWordle::Placement(placement)) => {
+                        let mut message = String::new();
+                        for i in placement.result.into_iter() {
+                            match i {
+                                ResultPlacement::Misplaced(l) => {
+                                    message.push_str(
+                                        format!(
+                                            "{}",
+                                            l.to_string().as_str().truecolor(255, 165, 0)
+                                        )
+                                        .as_str(),
+                                    );
+                                }
+                                ResultPlacement::Bad(l) => {
+                                    message.push_str(
+                                        format!("{}", Colorize::red(l.to_string().as_str()))
+                                            .as_str(),
+                                    );
+                                }
+                                ResultPlacement::Good(l) => {
+                                    message.push_str(
+                                        format!("{}", Colorize::green(l.to_string().as_str()))
+                                            .as_str(),
+                                    );
+                                }
+                            }
+                        }
+                        Err(message)
+                    }
+                    Ok(ResultWordle::Win) => Ok(()),
+                    Ok(ResultWordle::UnmatchedLens(_len_mot, len_guess)) => {
+                        if len_guess == 1 {
+                            return Ok(());
+                        }
+                        Err(String::from(""))
+                    }
+                    Err(_) => Err(String::from("")),
+                }
+            })
+            .interact();
+
+            let guess = match res {
+                Ok(guess) => guess,
+                Err(e) => {
+                    match e.kind() {
+                        std::io::ErrorKind::Interrupted => {}
+                        _ => eprint!("error {} happened, try again : {}", e, e.kind(),),
+                    }
+                    String::from("")
+                }
+            };
+
+            if guess.is_empty() {
+                continue;
+            }
 
             let guess = guess.trim();
 
@@ -129,10 +173,6 @@ impl Ui for Cli {
             }
 
             let guess = String::from(guess);
-
-            if guess.is_empty() {
-                continue;
-            }
 
             match traitement_wordle(&mot, guess) {
                 Ok(ResultWordle::Win) => {
