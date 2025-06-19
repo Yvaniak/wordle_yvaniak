@@ -7,12 +7,12 @@ edition = "2021"
 
 [dependencies]
 ratatui = "0.29.0"                                  #pour le tui
-rand = "0.9.0"                                      #pour le choix random du mot
+rand = "0.9.1"                                      #pour le choix random du mot
 unicode-segmentation = "1.12.0"                     #pour la comparaison entre charactères qui semblent humains avec les accent
-tui-big-text = "0.7.0"
-clap = { version = "4.5.27", features = ["cargo"] }
-cliclack = "0.3.5"
+tui-big-text = "0.7.1"
+clap = { version = "4.5.40", features = ["cargo"] }
+cliclack = "0.3.6"
 colored = "3.0.0"
 
 [dev-dependencies]
-assert_cmd = "2.0.16"
+assert_cmd = "2.0.17"
