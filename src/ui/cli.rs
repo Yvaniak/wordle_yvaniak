@@ -13,10 +13,7 @@ impl Ui for Cli {
     fn welcoming(&self) {
         match cliclack::intro("Welcome in the menu of this wordle game !") {
             Ok(_) => {}
-            Err(e) => eprintln!(
-                "An error happened during the print of the intro message : {}",
-                e
-            ),
+            Err(e) => eprintln!("An error happened during the print of the intro message : {e}"),
         }
     }
 
@@ -37,8 +34,7 @@ impl Ui for Cli {
                         match cliclack::outro("Exiting") {
                             Ok(_) => {}
                             Err(e) => eprintln!(
-                                "An error happened during the print of the outro message : {}",
-                                e
+                                "An error happened during the print of the outro message : {e}"
                             ),
                         }
                         return ChoixMenu::Quit;
@@ -64,10 +60,9 @@ impl Ui for Cli {
             "You can go to the menu by inputting : m and exit by inputting : e",
         ) {
             Ok(_) => {}
-            Err(e) => eprintln!(
-                "An error happened during the print of the info of menu and quit : {}",
-                e
-            ),
+            Err(e) => {
+                eprintln!("An error happened during the print of the info of menu and quit : {e}")
+            }
         }
 
         loop {
@@ -75,8 +70,7 @@ impl Ui for Cli {
             let mot_cloned = mot.clone();
 
             let res = cliclack::input(format!(
-                "What is your guess for the word of {} letters",
-                taille
+                "What is your guess for the word of {taille} letters"
             ))
             .placeholder(&"*".repeat(taille))
             .validate_interactively(move |input: &String| {
@@ -153,10 +147,9 @@ impl Ui for Cli {
             if guess == "e" {
                 match cliclack::outro("Exiting") {
                     Ok(_) => {}
-                    Err(e) => eprintln!(
-                        "An error happened during the print of the outro message : {}",
-                        e
-                    ),
+                    Err(e) => {
+                        eprintln!("An error happened during the print of the outro message : {e}")
+                    }
                 }
                 return ResultPartie::Quit;
             }
@@ -165,8 +158,7 @@ impl Ui for Cli {
                 match cliclack::log::info("\nGoing to menu") {
                     Ok(_) => {}
                     Err(e) => eprintln!(
-                        "An error happened during the print of the going to menu message : {}",
-                        e
+                        "An error happened during the print of the going to menu message : {e}"
                     ),
                 }
                 return ResultPartie::Stay;
@@ -178,10 +170,9 @@ impl Ui for Cli {
                 Ok(ResultWordle::Win) => {
                     match cliclack::log::success("You win !") {
                         Ok(_) => {}
-                        Err(e) => eprintln!(
-                            "Error happenned during the print of the win message : {}",
-                            e
-                        ),
+                        Err(e) => {
+                            eprintln!("Error happenned during the print of the win message : {e}")
+                        }
                     }
                     return ResultPartie::Stay;
                 }
